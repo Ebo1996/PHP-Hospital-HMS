@@ -1,214 +1,62 @@
 <?php
-session_start();
-error_reporting(0);
-include('include/config.php');
-if(strlen($_SESSION['id']==0)) {
- header('location:logout.php');
-  } else{
-
-if(isset($_POST['submit']))
-{	
-	$docid=$_SESSION['id'];
-	$patname=$_POST['patname'];
-$patcontact=$_POST['patcontact'];
-$patemail=$_POST['patemail'];
-$gender=$_POST['gender'];
-$pataddress=$_POST['pataddress'];
-$patage=$_POST['patage'];
-$medhis=$_POST['medhis'];
-$sql=mysqli_query($con,"insert into tblpatient(Docid,PatientName,PatientContno,PatientEmail,PatientGender,PatientAdd,PatientAge,PatientMedhis) values('$docid','$patname','$patcontact','$patemail','$gender','$pataddress','$patage','$medhis')");
-if($sql)
-{
-echo "<script>alert('Patient info added Successfully');</script>";
-echo "<script>window.location.href ='manage-patient.php'</script>";
-
+session_start();error_reporting(0);include('include/config.php');include('include/auth.php');
+$pageTitle='Add Patient';$pageIcon='fa-user-plus';
+if(isset($_POST['submit'])){
+  $docid=$_SESSION['id'];
+  $pn=mysqli_real_escape_string($con,$_POST['patname']);
+  $pc=mysqli_real_escape_string($con,$_POST['patcontact']);
+  $pe=mysqli_real_escape_string($con,$_POST['patemail']);
+  $pg=mysqli_real_escape_string($con,$_POST['gender']);
+  $pa=mysqli_real_escape_string($con,$_POST['pataddress']);
+  $page=mysqli_real_escape_string($con,$_POST['patage']);
+  $mh=mysqli_real_escape_string($con,$_POST['medhis']);
+  $q=mysqli_query($con,"INSERT INTO tblpatient(Docid,PatientName,PatientContno,PatientEmail,PatientGender,PatientAdd,PatientAge,PatientMedhis) VALUES('$docid','$pn','$pc','$pe','$pg','$pa','$page','$mh')");
+  if($q){header('location:manage-patient.php');exit();}
+  else{$err='Something went wrong. Please try again.';}
 }
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Doctor | Add Patient</title>
-		
-		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
-		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/select2/select2.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-datepicker/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" href="assets/css/styles.css">
-		<link rel="stylesheet" href="assets/css/plugins.css">
-		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
-
-	<script>
-function userAvailability() {
-$("#loaderIcon").show();
-jQuery.ajax({
-url: "check_availability.php",
-data:'email='+$("#patemail").val(),
-type: "POST",
-success:function(data){
-$("#user-availability-status1").html(data);
-$("#loaderIcon").hide();
-},
-error:function (){}
-});
-}
+?><!DOCTYPE html><html lang="en"><head><title>Add Patient — HMS+ Doctor</title><?php include('include/head.php');?></head><body>
+<div id="app"><?php include('include/sidebar.php');?>
+<div class="app-content"><?php include('include/header.php');?>
+<div class="main-content">
+<div class="doc-breadcrumb"><i class="fa fa-home"></i><a href="dashboard.php">Dashboard</a><span class="sep">/</span><a href="manage-patient.php">Patients</a><span class="sep">/</span><span class="cur">Add Patient</span></div>
+<?php if(!empty($err)):?><div class="doc-alert doc-alert-error"><i class="fa fa-exclamation-circle"></i><?php echo htmlspecialchars($err);?></div><?php endif;?>
+<div class="row justify-content-center"><div class="col-lg-7 col-md-10">
+<div class="doc-card">
+  <div class="doc-card-header"><div class="ch-left"><i class="fa fa-user-plus"></i><h5>New Patient Registration</h5></div></div>
+  <div class="doc-card-body">
+  <form method="post">
+    <div class="row">
+      <div class="col-md-6"><div class="doc-fg"><label>Patient Name</label><input type="text" name="patname" class="doc-input" placeholder="Full name" required></div></div>
+      <div class="col-md-6"><div class="doc-fg"><label>Contact Number</label><input type="text" name="patcontact" class="doc-input" placeholder="Phone" required maxlength="10" pattern="[0-9]+"></div></div>
+    </div>
+    <div class="doc-fg">
+      <label>Email Address</label>
+      <input type="email" id="patemail" name="patemail" class="doc-input" placeholder="patient@email.com" required onblur="chkEmail()">
+      <span id="email-status" style="font-size:.8rem;margin-top:4px;display:block;"></span>
+    </div>
+    <div class="doc-fg">
+      <label>Gender</label>
+      <div style="padding:12px 16px;background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;">
+        <div class="gender-row">
+          <label class="gender-opt"><input type="radio" name="gender" value="Male" required> Male</label>
+          <label class="gender-opt"><input type="radio" name="gender" value="Female"> Female</label>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6"><div class="doc-fg"><label>Age</label><input type="text" name="patage" class="doc-input" placeholder="Age" required></div></div>
+      <div class="col-md-6"><div class="doc-fg"><label>Address</label><input type="text" name="pataddress" class="doc-input" placeholder="Full address" required></div></div>
+    </div>
+    <div class="doc-fg"><label>Medical History (if any)</label><textarea name="medhis" class="doc-input" placeholder="Pre-existing conditions, allergies..."></textarea></div>
+    <button type="submit" name="submit" id="submit" class="btn-doc btn-doc-primary"><i class="fa fa-save"></i> Save Patient</button>
+    <a href="manage-patient.php" class="btn-doc btn-doc-outline" style="margin-left:10px">Cancel</a>
+  </form>
+  </div>
+</div>
+</div></div>
+</div><?php include('include/footer.php');?></div></div>
+<?php include('include/scripts.php');?>
+<script>
+function chkEmail(){$.post('check_availability.php',{email:$('#patemail').val()},function(d){$('#email-status').html(d);});}
 </script>
-	</head>
-	<body>
-		<div id="app">		
-<?php include('include/sidebar.php');?>
-<div class="app-content">
-<?php include('include/header.php');?>
-						
-<div class="main-content" >
-<div class="wrap-content container" id="container">
-						<!-- start: PAGE TITLE -->
-<section id="page-title">
-<div class="row">
-<div class="col-sm-8">
-<h1 class="mainTitle">Patient | Add Patient</h1>
-</div>
-<ol class="breadcrumb">
-<li>
-<span>Patient</span>
-</li>
-<li class="active">
-<span>Add Patient</span>
-</li>
-</ol>
-</div>
-</section>
-<div class="container-fluid container-fullw bg-white">
-<div class="row">
-<div class="col-md-12">
-<div class="row margin-top-30">
-<div class="col-lg-8 col-md-12">
-<div class="panel panel-white">
-<div class="panel-heading">
-<h5 class="panel-title">Add Patient</h5>
-</div>
-<div class="panel-body">
-<form role="form" name="" method="post">
-
-<div class="form-group">
-<label for="doctorname">
-Patient Name
-</label>
-<input type="text" name="patname" class="form-control"  placeholder="Enter Patient Name" required="true">
-</div>
-<div class="form-group">
-<label for="fess">
- Patient Contact no
-</label>
-<input type="text" name="patcontact" class="form-control"  placeholder="Enter Patient Contact no" required="true" maxlength="10" pattern="[0-9]+">
-</div>
-<div class="form-group">
-<label for="fess">
-Patient Email
-</label>
-<input type="email" id="patemail" name="patemail" class="form-control"  placeholder="Enter Patient Email id" required="true" onBlur="userAvailability()">
-<span id="user-availability-status1" style="font-size:12px;"></span>
-</div>
-<div class="form-group">
-<label class="block">
-Gender
-</label>
-<div class="clip-radio radio-primary">
-<input type="radio" id="rg-female" name="gender" value="female" >
-<label for="rg-female">
-Female
-</label>
-<input type="radio" id="rg-male" name="gender" value="male">
-<label for="rg-male">
-Male
-</label>
-</div>
-</div>
-<div class="form-group">
-<label for="address">
-Patient Address
-</label>
-<textarea name="pataddress" class="form-control"  placeholder="Enter Patient Address" required="true"></textarea>
-</div>
-<div class="form-group">
-<label for="fess">
- Patient Age
-</label>
-<input type="text" name="patage" class="form-control"  placeholder="Enter Patient Age" required="true">
-</div>
-<div class="form-group">
-<label for="fess">
- Medical History
-</label>
-<textarea type="text" name="medhis" class="form-control"  placeholder="Enter Patient Medical History(if any)" required="true"></textarea>
-</div>	
-
-<button type="submit" name="submit" id="submit" class="btn btn-o btn-primary">
-Add
-</button>
-</form>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="col-lg-12 col-md-12">
-<div class="panel panel-white">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>				
-</div>
-</div>
-</div>
-			<!-- start: FOOTER -->
-<?php include('include/footer.php');?>
-			<!-- end: FOOTER -->
-		
-			<!-- start: SETTINGS -->
-<?php include('include/setting.php');?>
-			
-			<!-- end: SETTINGS -->
-		</div>
-		<!-- start: MAIN JAVASCRIPTS -->
-		<script src="vendor/jquery/jquery.min.js"></script>
-		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="vendor/modernizr/modernizr.js"></script>
-		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
-		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-		<script src="vendor/switchery/switchery.min.js"></script>
-		<!-- end: MAIN JAVASCRIPTS -->
-		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<script src="vendor/maskedinput/jquery.maskedinput.min.js"></script>
-		<script src="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-		<script src="vendor/autosize/autosize.min.js"></script>
-		<script src="vendor/selectFx/classie.js"></script>
-		<script src="vendor/selectFx/selectFx.js"></script>
-		<script src="vendor/select2/select2.min.js"></script>
-		<script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-		<script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
-		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<!-- start: CLIP-TWO JAVASCRIPTS -->
-		<script src="assets/js/main.js"></script>
-		<!-- start: JavaScript Event Handlers for this page -->
-		<script src="assets/js/form-elements.js"></script>
-		<script>
-			jQuery(document).ready(function() {
-				Main.init();
-				FormElements.init();
-			});
-		</script>
-		<!-- end: JavaScript Event Handlers for this page -->
-		<!-- end: CLIP-TWO JAVASCRIPTS -->
-	</body>
-</html>
-<?php } ?>
+</body></html>

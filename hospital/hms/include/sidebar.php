@@ -1,66 +1,27 @@
-<div class="sidebar app-aside" id="sidebar">
-				<div class="sidebar-container perfect-scrollbar">
+<?php
+$current = basename($_SERVER['PHP_SELF']);
+function navLink($href, $icon, $label, $current) {
+    $active = ($current === $href) ? 'active' : '';
+    echo "<li><a href=\"$href\" class=\"$active\"><i class=\"fa $icon\"></i><span>$label</span></a></li>";
+}
+?>
+<div class="hms-sidebar" id="hmsSidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon"><i class="fa fa-heartbeat"></i></div>
+    <div class="brand-name">HMS<span>+</span></div>
+  </div>
 
-<nav>
-						
-						<!-- start: MAIN NAVIGATION MENU -->
-						<div class="navbar-title" style="background-color: black;">
-							<span>Main Navigation</span>
-						</div>
-						<ul class="main-navigation-menu">
-							<li>
-								<a href="dashboard.php">
-									<div class="item-content">
-										<div class="item-media">
-											<i class="ti-home"></i>
-										</div>
-										<div class="item-inner">
-											<span class="title"> Dashboard </span>
-										</div>
-									</div>
-								</a>
-							</li>
-							<li>
-								<a href="book-appointment.php">
-									<div class="item-content">
-										<div class="item-media">
-											<i class="ti-pencil-alt"></i>
-										</div>
-										<div class="item-inner">
-											<span class="title"> Book Appointment </span>
-										</div>
-									</div>
-								</a>
-							</li>
+  <div class="sidebar-section-label">Patient Portal</div>
+  <ul class="hms-nav">
+    <?php navLink('dashboard.php',         'fa-home',           'Dashboard',          $current); ?>
+    <?php navLink('book-appointment.php',  'fa-calendar-plus-o','Book Appointment',   $current); ?>
+    <?php navLink('appointment-history.php','fa-calendar',      'Appointment History',$current); ?>
+    <?php navLink('manage-medhistory.php', 'fa-file-medical',   'Medical History',    $current); ?>
+    <?php navLink('edit-profile.php',      'fa-user',           'My Profile',         $current); ?>
+    <?php navLink('change-password.php',   'fa-lock',           'Change Password',    $current); ?>
+  </ul>
 
-							<li>
-								<a href="appointment-history.php">
-									<div class="item-content">
-										<div class="item-media">
-											<i class="ti-list"></i>
-										</div>
-										<div class="item-inner">
-											<span class="title"> Appointment History </span>
-										</div>
-									</div>
-								</a>
-							</li>
-<li>
-								<a href="manage-medhistory.php">
-									<div class="item-content">
-										<div class="item-media">
-											<i class="ti-list"></i>
-										</div>
-										<div class="item-inner">
-											<span class="title"> Medical History </span>
-										</div>
-									</div>
-								</a>
-							</li>
-
-						</ul>
-						<!-- end: CORE FEATURES -->
-						
-					</nav>
-					</div>
-			</div>
+  <div class="sidebar-footer">
+    <a href="logout.php"><i class="fa fa-sign-out"></i> Logout</a>
+  </div>
+</div>

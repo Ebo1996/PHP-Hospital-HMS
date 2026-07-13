@@ -1,223 +1,58 @@
 <?php
-session_start();
-//error_reporting(0);
-include('include/config.php');
-if(strlen($_SESSION['id']==0)) {
- header('location:logout.php');
-  } else{
-
-date_default_timezone_set('Asia/Kolkata');// change according timezone
-$currentTime = date( 'd-m-Y h:i:s A', time () );
-if(isset($_POST['submit']))
-{
-$cpass=$_POST['cpass'];	
-$uname=$_SESSION['login'];
-$sql=mysqli_query($con,"SELECT password FROM  admin where password='$cpass' && username='$uname'");
-$num=mysqli_fetch_array($sql);
-if($num>0)
-{
-$npass=$_POST['npass'];
- $con=mysqli_query($con,"update admin set password='$npass', updationDate='$currentTime' where username='$uname'");
-$_SESSION['msg1']="Password Changed Successfully !!";
+session_start();error_reporting(0);include('include/config.php');include('include/auth.php');
+$pageTitle='Change Password';$pageIcon='fa-lock';
+$msg='';$mtype='';
+if(isset($_POST['submit'])){
+  $cp=$_POST['cpass'];$np=$_POST['npass'];$cf=$_POST['cfpass'];
+  if($np!==$cf){$msg='New passwords do not match.';$mtype='error';}
+  elseif(strlen($np)<6){$msg='New password must be at least 6 characters.';$mtype='error';}
+  else{
+    $uname=$_SESSION['login'];
+    $chk=mysqli_query($con,"SELECT id FROM admin WHERE password='$cp' AND username='$uname'");
+    if(mysqli_num_rows($chk)>0){
+      mysqli_query($con,"UPDATE admin SET password='$np' WHERE username='$uname'");
+      $msg='Password updated successfully!';$mtype='success';
+    } else {$msg='Current password is incorrect.';$mtype='error';}
+  }
 }
-else
-{
-$_SESSION['msg1']="Old Password not match !!";
-}
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Admin | change Password</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-status-bar-style" content="black">
-		<meta content="" name="description" />
-		<meta content="" name="author" />
-		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
-		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/select2/select2.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-datepicker/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" href="assets/css/styles.css">
-		<link rel="stylesheet" href="assets/css/plugins.css">
-		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
-<script type="text/javascript">
-function valid()
-{
-if(document.chngpwd.cpass.value=="")
-{
-alert("Current Password Filed is Empty !!");
-document.chngpwd.cpass.focus();
-return false;
-}
-else if(document.chngpwd.npass.value=="")
-{
-alert("New Password Filed is Empty !!");
-document.chngpwd.npass.focus();
-return false;
-}
-else if(document.chngpwd.cfpass.value=="")
-{
-alert("Confirm Password Filed is Empty !!");
-document.chngpwd.cfpass.focus();
-return false;
-}
-else if(document.chngpwd.npass.value!= document.chngpwd.cfpass.value)
-{
-alert("Password and Confirm Password Field do not match  !!");
-document.chngpwd.cfpass.focus();
-return false;
-}
-return true;
-}
+?><!DOCTYPE html><html lang="en"><head><title>Change Password — HMS+ Admin</title><?php include('include/head.php');?></head><body>
+<div id="app"><?php include('include/sidebar.php');?>
+<div class="app-content"><?php include('include/header.php');?>
+<div class="main-content">
+<div class="adm-breadcrumb"><i class="fa fa-home"></i><a href="dashboard.php">Dashboard</a><span class="sep">/</span><span class="cur">Change Password</span></div>
+<div class="row justify-content-center"><div class="col-lg-5 col-md-8">
+<div style="background:linear-gradient(135deg,var(--dark),var(--dark2));border-radius:14px;padding:18px 22px;margin-bottom:22px;display:flex;align-items:center;gap:14px;">
+  <div style="width:44px;height:44px;background:rgba(238,155,0,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--amber);font-size:1.2rem;"><i class="fa fa-shield"></i></div>
+  <div><div style="color:#fff;font-weight:700;font-size:.88rem;">Security Note</div><div style="color:rgba(255,255,255,.6);font-size:.76rem;margin-top:2px;">Admin passwords are stored as plain text. Use a strong, unique password.</div></div>
+</div>
+<?php if($msg):?><div class="adm-alert adm-alert-<?php echo $mtype==='success'?'success':'error';?>"><i class="fa fa-<?php echo $mtype==='success'?'check-circle':'exclamation-circle';?>"></i><?php echo htmlspecialchars($msg);?></div><?php endif;?>
+<div class="adm-card">
+  <div class="adm-card-header"><div class="ch-left"><i class="fa fa-lock"></i><h5>Update Password</h5></div></div>
+  <div class="adm-card-body">
+  <form method="post" onsubmit="return chkPwd()">
+    <div class="adm-fg"><label>Current Password</label>
+      <div style="position:relative"><i class="fa fa-lock" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)"></i>
+      <input type="password" name="cpass" class="adm-input" style="padding-left:36px" placeholder="Enter current password" required></div>
+    </div>
+    <div class="adm-fg"><label>New Password</label>
+      <div style="position:relative"><i class="fa fa-key" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)"></i>
+      <input type="password" name="npass" id="npass" class="adm-input" style="padding-left:36px" placeholder="Min. 6 characters" required onkeyup="pwdStrength(this.value)"></div>
+      <div style="height:4px;border-radius:4px;background:#eee;margin-top:6px;overflow:hidden"><div id="sbar" style="height:100%;width:0;border-radius:4px;transition:all .3s"></div></div>
+      <div id="slbl" style="font-size:.73rem;margin-top:3px;"></div>
+    </div>
+    <div class="adm-fg"><label>Confirm New Password</label>
+      <div style="position:relative"><i class="fa fa-check-circle" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)"></i>
+      <input type="password" name="cfpass" id="cfpass" class="adm-input" style="padding-left:36px" placeholder="Repeat new password" required></div>
+    </div>
+    <button type="submit" name="submit" class="btn-adm btn-adm-primary" style="width:100%;justify-content:center"><i class="fa fa-save"></i> Update Password</button>
+  </form>
+  </div>
+</div>
+</div></div>
+</div><?php include('include/footer.php');?></div></div>
+<?php include('include/scripts.php');?>
+<script>
+function pwdStrength(v){var s=0;if(v.length>=6)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;var c=['','#e63946','#ee9b00','#2d6a4f','#0a9396'],l=['','Weak','Fair','Good','Strong'],w=[0,25,50,75,100];document.getElementById('sbar').style.width=w[s]+'%';document.getElementById('sbar').style.background=c[s];document.getElementById('slbl').textContent=l[s]?'Strength: '+l[s]:'';document.getElementById('slbl').style.color=c[s];}
+function chkPwd(){var n=document.getElementById('npass').value,c=document.getElementById('cfpass').value;if(n.length<6){alert('Min 6 characters.');return false;}if(n!==c){alert('Passwords do not match.');return false;}return true;}
 </script>
-
-	</head>
-	<body>
-		<div id="app">		
-<?php include('include/sidebar.php');?>
-			<div class="app-content">
-				
-						<?php include('include/header.php');?>
-		
-				</header>
-				<!-- end: TOP NAVBAR -->
-				<div class="main-content" >
-					<div class="wrap-content container" id="container">
-						<!-- start: PAGE TITLE -->
-						<section id="page-title">
-							<div class="row">
-								<div class="col-sm-8">
-									<h1 class="mainTitle">Admin | Change Password</h1>
-																	</div>
-								<ol class="breadcrumb">
-									<li>
-										<span>Admin</span>
-									</li>
-									<li class="active">
-										<span>Change Password</span>
-									</li>
-								</ol>
-							</div>
-						</section>
-						<!-- end: PAGE TITLE -->
-						<!-- start: BASIC EXAMPLE -->
-						<div class="container-fluid container-fullw bg-white">
-							<div class="row">
-								<div class="col-md-12">
-									
-									<div class="row margin-top-30">
-										<div class="col-lg-8 col-md-12">
-											<div class="panel panel-white">
-												<div class="panel-heading">
-													<h5 class="panel-title">Change Password</h5>
-												</div>
-												<div class="panel-body">
-								<p style="color:red;"><?php echo htmlentities($_SESSION['msg1']);?>
-								<?php echo htmlentities($_SESSION['msg1']="");?></p>	
-													<form role="form" name="chngpwd" method="post" onSubmit="return valid();">
-														<div class="form-group">
-															<label for="exampleInputEmail1">
-																Current Password
-															</label>
-							<input type="password" name="cpass" class="form-control"  placeholder="Enter Current Password">
-														</div>
-														<div class="form-group">
-															<label for="exampleInputPassword1">
-																New Password
-															</label>
-					<input type="password" name="npass" class="form-control"  placeholder="New Password">
-														</div>
-														
-<div class="form-group">
-															<label for="exampleInputPassword1">
-																Confirm Password
-															</label>
-									<input type="password" name="cfpass" class="form-control"  placeholder="Confirm Password">
-														</div>
-														
-														
-														
-														<button type="submit" name="submit" class="btn btn-o btn-primary">
-															Submit
-														</button>
-													</form>
-												</div>
-											</div>
-										</div>
-											
-											</div>
-										</div>
-									<div class="col-lg-12 col-md-12">
-											<div class="panel panel-white">
-												
-												
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- end: BASIC EXAMPLE -->
-			
-					
-					
-						
-						
-					
-						<!-- end: SELECT BOXES -->
-						
-					</div>
-				</div>
-			</div>
-			<!-- start: FOOTER -->
-	<?php include('include/footer.php');?>
-			<!-- end: FOOTER -->
-		
-			<!-- start: SETTINGS -->
-	<?php include('include/setting.php');?>
-		
-			<!-- end: SETTINGS -->
-		</div>
-		<!-- start: MAIN JAVASCRIPTS -->
-		<script src="vendor/jquery/jquery.min.js"></script>
-		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="vendor/modernizr/modernizr.js"></script>
-		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
-		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-		<script src="vendor/switchery/switchery.min.js"></script>
-		<!-- end: MAIN JAVASCRIPTS -->
-		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<script src="vendor/maskedinput/jquery.maskedinput.min.js"></script>
-		<script src="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-		<script src="vendor/autosize/autosize.min.js"></script>
-		<script src="vendor/selectFx/classie.js"></script>
-		<script src="vendor/selectFx/selectFx.js"></script>
-		<script src="vendor/select2/select2.min.js"></script>
-		<script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-		<script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
-		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<!-- start: CLIP-TWO JAVASCRIPTS -->
-		<script src="assets/js/main.js"></script>
-		<!-- start: JavaScript Event Handlers for this page -->
-		<script src="assets/js/form-elements.js"></script>
-		<script>
-			jQuery(document).ready(function() {
-				Main.init();
-				FormElements.init();
-			});
-		</script>
-		<!-- end: JavaScript Event Handlers for this page -->
-		<!-- end: CLIP-TWO JAVASCRIPTS -->
-	</body>
-</html>
-<?php } ?>
+</body></html>

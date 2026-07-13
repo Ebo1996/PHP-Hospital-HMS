@@ -1,262 +1,64 @@
 <?php
-session_start();
-error_reporting(0);
-include('include/config.php');
-if(strlen($_SESSION['id']==0)) {
- header('location:logout.php');
-  } else{
-
-if(isset($_POST['submit']))
-{	$docspecialization=$_POST['Doctorspecialization'];
-$docname=$_POST['docname'];
-$docaddress=$_POST['clinicaddress'];
-$docfees=$_POST['docfees'];
-$doccontactno=$_POST['doccontact'];
-$docemail=$_POST['docemail'];
-$password=md5($_POST['npass']);
-$sql=mysqli_query($con,"insert into doctors(specilization,doctorName,address,docFees,contactno,docEmail,password) values('$docspecialization','$docname','$docaddress','$docfees','$doccontactno','$docemail','$password')");
-if($sql)
-{
-echo "<script>alert('Doctor info added Successfully');</script>";
-echo "<script>window.location.href ='manage-doctors.php'</script>";
-
+session_start();error_reporting(0);include('include/config.php');include('include/auth.php');
+$pageTitle='Add Doctor';$pageIcon='fa-user-plus';
+if(isset($_POST['submit'])){
+  if($_POST['npass']!==$_POST['cfpass']){$err='Passwords do not match.';}
+  else{
+    $sp=mysqli_real_escape_string($con,$_POST['Doctorspecialization']);
+    $dn=mysqli_real_escape_string($con,$_POST['docname']);
+    $da=mysqli_real_escape_string($con,$_POST['clinicaddress']);
+    $df=mysqli_real_escape_string($con,$_POST['docfees']);
+    $dc=mysqli_real_escape_string($con,$_POST['doccontact']);
+    $de=mysqli_real_escape_string($con,$_POST['docemail']);
+    $pw=md5($_POST['npass']);
+    $q=mysqli_query($con,"INSERT INTO doctors(specilization,doctorName,address,docFees,contactno,docEmail,password) VALUES('$sp','$dn','$da','$df','$dc','$de','$pw')");
+    if($q){$ok='Doctor added successfully!';} else{$err='Failed to add doctor.';}
+  }
 }
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Admin | Add Doctor</title>
-		
-		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
-		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/select2/select2.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-datepicker/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" href="assets/css/styles.css">
-		<link rel="stylesheet" href="assets/css/plugins.css">
-		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
-<script type="text/javascript">
-function valid()
-{
- if(document.adddoc.npass.value!= document.adddoc.cfpass.value)
-{
-alert("Password and Confirm Password Field do not match  !!");
-document.adddoc.cfpass.focus();
-return false;
-}
-return true;
-}
-</script>
-
-
-<script>
-function checkemailAvailability() {
-$("#loaderIcon").show();
-jQuery.ajax({
-url: "check_availability.php",
-data:'emailid='+$("#docemail").val(),
-type: "POST",
-success:function(data){
-$("#email-availability-status").html(data);
-$("#loaderIcon").hide();
-},
-error:function (){}
-});
-}
-</script>
-	</head>
-	<body>
-		<div id="app">		
-<?php include('include/sidebar.php');?>
-			<div class="app-content">
-				
-						<?php include('include/header.php');?>
-						
-				<!-- end: TOP NAVBAR -->
-				<div class="main-content" >
-					<div class="wrap-content container" id="container">
-						<!-- start: PAGE TITLE -->
-						<section id="page-title">
-							<div class="row">
-								<div class="col-sm-8">
-									<h1 class="mainTitle">Admin | Add Doctor</h1>
-																	</div>
-								<ol class="breadcrumb">
-									<li>
-										<span>Admin</span>
-									</li>
-									<li class="active">
-										<span>Add Doctor</span>
-									</li>
-								</ol>
-							</div>
-						</section>
-						<!-- end: PAGE TITLE -->
-						<!-- start: BASIC EXAMPLE -->
-						<div class="container-fluid container-fullw bg-white">
-							<div class="row">
-								<div class="col-md-12">
-									
-									<div class="row margin-top-30">
-										<div class="col-lg-8 col-md-12">
-											<div class="panel panel-white">
-												<div class="panel-heading">
-													<h5 class="panel-title">Add Doctor</h5>
-												</div>
-												<div class="panel-body">
-									
-													<form role="form" name="adddoc" method="post" onSubmit="return valid();">
-														<div class="form-group">
-															<label for="DoctorSpecialization">
-																Doctor Specialization
-															</label>
-							<select name="Doctorspecialization" class="form-control" required="true">
-																<option value="">Select Specialization</option>
-<?php $ret=mysqli_query($con,"select * from doctorspecilization");
-while($row=mysqli_fetch_array($ret))
-{
-?>
-																<option value="<?php echo htmlentities($row['specilization']);?>">
-																	<?php echo htmlentities($row['specilization']);?>
-																</option>
-																<?php } ?>
-																
-															</select>
-														</div>
-
-<div class="form-group">
-															<label for="doctorname">
-																 Doctor Name
-															</label>
-					<input type="text" name="docname" class="form-control"  placeholder="Enter Doctor Name" required="true">
-														</div>
-
-
-<div class="form-group">
-															<label for="address">
-																 Doctor Clinic Address
-															</label>
-					<textarea name="clinicaddress" class="form-control"  placeholder="Enter Doctor Clinic Address" required="true"></textarea>
-														</div>
-<div class="form-group">
-															<label for="fess">
-																 Doctor Consultancy Fees
-															</label>
-					<input type="text" name="docfees" class="form-control"  placeholder="Enter Doctor Consultancy Fees" required="true">
-														</div>
-	
-<div class="form-group">
-									<label for="fess">
-																 Doctor Contact no
-															</label>
-					<input type="text" name="doccontact" class="form-control"  placeholder="Enter Doctor Contact no" required="true">
-														</div>
-
-<div class="form-group">
-									<label for="fess">
-																 Doctor Email
-															</label>
-<input type="email" id="docemail" name="docemail" class="form-control"  placeholder="Enter Doctor Email id" required="true" onBlur="checkemailAvailability()">
-<span id="email-availability-status"></span>
+?><!DOCTYPE html><html lang="en"><head><title>Add Doctor — HMS+ Admin</title><?php include('include/head.php');?></head><body>
+<div id="app"><?php include('include/sidebar.php');?>
+<div class="app-content"><?php include('include/header.php');?>
+<div class="main-content">
+<div class="adm-breadcrumb"><i class="fa fa-home"></i><a href="dashboard.php">Dashboard</a><span class="sep">/</span><a href="manage-doctors.php">Doctors</a><span class="sep">/</span><span class="cur">Add Doctor</span></div>
+<?php if(!empty($ok)):?><div class="adm-alert adm-alert-success"><i class="fa fa-check-circle"></i><?php echo $ok;?></div><?php endif;?>
+<?php if(!empty($err)):?><div class="adm-alert adm-alert-error"><i class="fa fa-exclamation-circle"></i><?php echo $err;?></div><?php endif;?>
+<div class="row justify-content-center"><div class="col-lg-7 col-md-10">
+<div class="adm-card">
+  <div class="adm-card-header"><div class="ch-left"><i class="fa fa-user-plus"></i><h5>New Doctor Registration</h5></div></div>
+  <div class="adm-card-body">
+  <form method="post">
+    <div class="adm-fg"><label>Specialization</label>
+      <select name="Doctorspecialization" class="adm-input" required>
+        <option value="">— Select —</option>
+        <?php $r=mysqli_query($con,"SELECT * FROM doctorspecilization");while($row=mysqli_fetch_array($r)):?>
+        <option value="<?php echo htmlspecialchars($row['specilization']);?>"><?php echo htmlspecialchars($row['specilization']);?></option>
+        <?php endwhile;?>
+      </select>
+    </div>
+    <div class="row">
+      <div class="col-md-6"><div class="adm-fg"><label>Doctor Name</label><input type="text" name="docname" class="adm-input" placeholder="Full name" required></div></div>
+      <div class="col-md-6"><div class="adm-fg"><label>Consultancy Fees</label><input type="text" name="docfees" class="adm-input" placeholder="Amount" required></div></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6"><div class="adm-fg"><label>Contact Number</label><input type="text" name="doccontact" class="adm-input" placeholder="Phone" required></div></div>
+      <div class="col-md-6"><div class="adm-fg"><label>Email Address</label><input type="email" name="docemail" id="docemail" class="adm-input" placeholder="doctor@email.com" required onblur="chkEmail()"><span id="em-status" style="font-size:.76rem;margin-top:3px;display:block;"></span></div></div>
+    </div>
+    <div class="adm-fg"><label>Clinic Address</label><textarea name="clinicaddress" class="adm-input" placeholder="Full address" required></textarea></div>
+    <div class="row">
+      <div class="col-md-6"><div class="adm-fg"><label>Password</label><input type="password" name="npass" class="adm-input" placeholder="Min 6 chars" required></div></div>
+      <div class="col-md-6"><div class="adm-fg"><label>Confirm Password</label><input type="password" name="cfpass" class="adm-input" placeholder="Repeat password" required></div></div>
+    </div>
+    <button type="submit" name="submit" class="btn-adm btn-adm-primary"><i class="fa fa-save"></i> Save Doctor</button>
+    <a href="manage-doctors.php" class="btn-adm btn-adm-outline" style="margin-left:10px">Cancel</a>
+  </form>
+  </div>
 </div>
-
-
-
-														
-														<div class="form-group">
-															<label for="exampleInputPassword1">
-																 Password
-															</label>
-					<input type="password" name="npass" class="form-control"  placeholder="New Password" required="required">
-														</div>
-														
-<div class="form-group">
-															<label for="exampleInputPassword2">
-																Confirm Password
-															</label>
-									<input type="password" name="cfpass" class="form-control"  placeholder="Confirm Password" required="required">
-														</div>
-														
-														
-														
-														<button type="submit" name="submit" id="submit" class="btn btn-o btn-primary">
-															Submit
-														</button>
-													</form>
-												</div>
-											</div>
-										</div>
-											
-											</div>
-										</div>
-									<div class="col-lg-12 col-md-12">
-											<div class="panel panel-white">
-												
-												
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- end: BASIC EXAMPLE -->
-			
-					
-					
-						
-						
-					
-						<!-- end: SELECT BOXES -->
-						
-					</div>
-				</div>
-			</div>
-			<!-- start: FOOTER -->
-	<?php include('include/footer.php');?>
-			<!-- end: FOOTER -->
-		
-			<!-- start: SETTINGS -->
-	<?php include('include/setting.php');?>
-			
-			<!-- end: SETTINGS -->
-		</div>
-		<!-- start: MAIN JAVASCRIPTS -->
-		<script src="vendor/jquery/jquery.min.js"></script>
-		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="vendor/modernizr/modernizr.js"></script>
-		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
-		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-		<script src="vendor/switchery/switchery.min.js"></script>
-		<!-- end: MAIN JAVASCRIPTS -->
-		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<script src="vendor/maskedinput/jquery.maskedinput.min.js"></script>
-		<script src="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-		<script src="vendor/autosize/autosize.min.js"></script>
-		<script src="vendor/selectFx/classie.js"></script>
-		<script src="vendor/selectFx/selectFx.js"></script>
-		<script src="vendor/select2/select2.min.js"></script>
-		<script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-		<script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
-		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<!-- start: CLIP-TWO JAVASCRIPTS -->
-		<script src="assets/js/main.js"></script>
-		<!-- start: JavaScript Event Handlers for this page -->
-		<script src="assets/js/form-elements.js"></script>
-		<script>
-			jQuery(document).ready(function() {
-				Main.init();
-				FormElements.init();
-			});
-		</script>
-		<!-- end: JavaScript Event Handlers for this page -->
-		<!-- end: CLIP-TWO JAVASCRIPTS -->
-	</body>
-</html>
-<?php } ?>
+</div></div>
+</div><?php include('include/footer.php');?></div></div>
+<?php include('include/scripts.php');?>
+<script>
+function chkEmail(){
+  $.post('check_availability.php',{emailid:$('#docemail').val()},function(d){$('#em-status').html(d);});
+}
+</script>
+</body></html>

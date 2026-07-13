@@ -1,255 +1,93 @@
 <?php
-session_start();
-error_reporting(0);
-include('include/config.php');
-if(strlen($_SESSION['id']==0)) {
- header('location:logout.php');
-  } else{
-if(isset($_POST['submit']))
-  {
-    
-    $vid=$_GET['viewid'];
-    $bp=$_POST['bp'];
-    $bs=$_POST['bs'];
-    $weight=$_POST['weight'];
-    $temp=$_POST['temp'];
-   $pres=$_POST['pres'];
-   
- 
-      $query.=mysqli_query($con, "insert   tblmedicalhistory(PatientID,BloodPressure,BloodSugar,Weight,Temperature,MedicalPres)value('$vid','$bp','$bs','$weight','$temp','$pres')");
-    if ($query) {
-    echo '<script>alert("Medicle history has been added.")</script>';
-    echo "<script>window.location.href ='manage-patient.php'</script>";
-  }
-  else
-    {
-      echo '<script>alert("Something Went Wrong. Please try again")</script>';
-    }
-
-  
+session_start();error_reporting(0);include('include/config.php');include('include/auth.php');
+$pageTitle='View Patient';$pageIcon='fa-user';
+$vid=intval($_GET['viewid']??0);
+if(isset($_POST['submit'])){
+  $bp=mysqli_real_escape_string($con,$_POST['bp']);
+  $bs=mysqli_real_escape_string($con,$_POST['bs']);
+  $wt=mysqli_real_escape_string($con,$_POST['weight']);
+  $tp=mysqli_real_escape_string($con,$_POST['temp']);
+  $pr=mysqli_real_escape_string($con,$_POST['pres']);
+  $q=mysqli_query($con,"INSERT INTO tblmedicalhistory(PatientID,BloodPressure,BloodSugar,Weight,Temperature,MedicalPres) VALUES('$vid','$bp','$bs','$wt','$tp','$pr')");
+  if($q){$msg='Medical record added.';$mtype='success';}
+  else{$msg='Something went wrong.';$mtype='error';}
 }
+$ret=mysqli_query($con,"SELECT * FROM tblpatient WHERE ID='$vid'");
+$patient=mysqli_fetch_array($ret);
+?><!DOCTYPE html><html lang="en"><head><title>View Patient — HMS+ Doctor</title><?php include('include/head.php');?></head><body>
+<div id="app"><?php include('include/sidebar.php');?>
+<div class="app-content"><?php include('include/header.php');?>
+<div class="main-content">
+<div class="doc-breadcrumb"><i class="fa fa-home"></i><a href="dashboard.php">Dashboard</a><span class="sep">/</span><a href="manage-patient.php">Patients</a><span class="sep">/</span><span class="cur">View Patient</span></div>
+<?php if(!empty($msg)):?><div class="doc-alert doc-alert-<?php echo $mtype;?>"><i class="fa fa-<?php echo $mtype==='success'?'check-circle':'exclamation-circle';?>"></i><?php echo htmlspecialchars($msg);?></div><?php endif;?>
+<?php if($patient):?>
 
-?>
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Doctor | Manage Patients</title>
-		
-		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
-		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/select2/select2.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-datepicker/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" href="assets/css/styles.css">
-		<link rel="stylesheet" href="assets/css/plugins.css">
-		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
-	</head>
-	<body>
-		<div id="app">		
-<?php include('include/sidebar.php');?>
-<div class="app-content">
-<?php include('include/header.php');?>
-<div class="main-content" >
-<div class="wrap-content container" id="container">
-						<!-- start: PAGE TITLE -->
-<section id="page-title">
-<div class="row">
-<div class="col-sm-8">
-<h1 class="mainTitle">Doctor | Manage Patients</h1>
+<!-- Patient Info -->
+<div class="doc-card">
+  <div class="doc-card-header">
+    <div class="ch-left"><i class="fa fa-user"></i><h5><?php echo htmlspecialchars($patient['PatientName']);?></h5></div>
+    <span class="doc-badge badge-teal"><?php echo htmlspecialchars($patient['PatientGender']);?></span>
+  </div>
+  <div class="doc-card-body">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+      <?php foreach([['Email',$patient['PatientEmail']],['Mobile',$patient['PatientContno']],['Age',$patient['PatientAge']],['Address',$patient['PatientAdd']],['Pre-existing History',$patient['PatientMedhis']?:'-'],['Registered',$patient['CreationDate']]] as $f):?>
+      <div style="background:var(--body-bg);border-radius:10px;padding:14px;">
+        <div style="font-size:.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;"><?php echo $f[0];?></div>
+        <div style="font-size:.9rem;"><?php echo htmlspecialchars($f[1]);?></div>
+      </div>
+      <?php endforeach;?>
+    </div>
+  </div>
 </div>
-<ol class="breadcrumb">
-<li>
-<span>Doctor</span>
-</li>
-<li class="active">
-<span>Manage Patients</span>
-</li>
-</ol>
-</div>
-</section>
-<div class="container-fluid container-fullw bg-white">
-<div class="row">
-<div class="col-md-12">
-<h5 class="over-title margin-bottom-15">Manage <span class="text-bold">Patients</span></h5>
-<?php
-                               $vid=$_GET['viewid'];
-                               $ret=mysqli_query($con,"select * from tblpatient where ID='$vid'");
-$cnt=1;
-while ($row=mysqli_fetch_array($ret)) {
-                               ?>
-<table border="1" class="table table-bordered">
- <tr align="center">
-<td colspan="4" style="font-size:20px;color:blue">
- Patient Details</td></tr>
 
+<!-- Medical History -->
+<div class="doc-card">
+  <div class="doc-card-header"><div class="ch-left"><i class="fa fa-heartbeat"></i><h5>Visit History</h5></div></div>
+  <div class="doc-card-body" style="padding:0">
+  <div class="doc-table-wrap"><table class="doc-table">
+    <thead><tr><th>#</th><th>BP</th><th>Blood Sugar</th><th>Weight</th><th>Temperature</th><th>Prescription</th><th>Date</th></tr></thead>
+    <tbody>
+    <?php $hist=mysqli_query($con,"SELECT * FROM tblmedicalhistory WHERE PatientID='$vid' ORDER BY CreationDate DESC");$c=1;
+    if(mysqli_num_rows($hist)==0):?>
+    <tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-stethoscope" style="font-size:1.8rem;display:block;margin-bottom:8px;opacity:.3"></i>No records yet.</td></tr>
+    <?php else: while($row=mysqli_fetch_array($hist)):?>
     <tr>
-    <th scope>Patient Name</th>
-    <td><?php  echo $row['PatientName'];?></td>
-    <th scope>Patient Email</th>
-    <td><?php  echo $row['PatientEmail'];?></td>
-  </tr>
-  <tr>
-    <th scope>Patient Mobile Number</th>
-    <td><?php  echo $row['PatientContno'];?></td>
-    <th>Patient Address</th>
-    <td><?php  echo $row['PatientAdd'];?></td>
-  </tr>
-    <tr>
-    <th>Patient Gender</th>
-    <td><?php  echo $row['PatientGender'];?></td>
-    <th>Patient Age</th>
-    <td><?php  echo $row['PatientAge'];?></td>
-  </tr>
-  <tr>
-    
-    <th>Patient Medical History(if any)</th>
-    <td><?php  echo $row['PatientMedhis'];?></td>
-     <th>Patient Reg Date</th>
-    <td><?php  echo $row['CreationDate'];?></td>
-  </tr>
- 
-<?php }?>
-</table>
-<?php  
-
-$ret=mysqli_query($con,"select * from tblmedicalhistory  where PatientID='$vid'");
-
-
-
- ?>
-<!-- <table id="datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-  <tr align="center">
-   <th colspan="8" >Medical History</th> 
-  </tr>
-  <tr>
-    <th>#</th>
-<th>Blood Pressure</th>
-<th>Weight</th>
-<th>Blood Sugar</th>
-<th>Body Temprature</th>
-<th>Medical Prescription</th>
-<th>Visit Date</th>
-</tr>
-<?php  
-while ($row=mysqli_fetch_array($ret)) { 
-  ?>
-<tr>
-  <td><?php echo $cnt;?></td>
- <td><?php  echo $row['BloodPressure'];?></td>
- <td><?php  echo $row['Weight'];?></td>
- <td><?php  echo $row['BloodSugar'];?></td> 
-  <td><?php  echo $row['Temperature'];?></td>
-  <td><?php  echo $row['MedicalPres'];?></td>
-  <td><?php  echo $row['CreationDate'];?></td> 
-</tr>
-<?php $cnt=$cnt+1;} ?>
-</table> -->
-
-<!-- <p align="center">                            
- <button class="btn btn-primary waves-effect waves-light w-lg" data-toggle="modal" data-target="#myModal">Add Medical History</button></p>   -->
-
-<?php  ?>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-     <div class="modal-content">
-      <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Add Medical History</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                <table class="table table-bordered table-hover data-tables">
-
-                                 <form method="post" name="submit">
-
-      <tr>
-    <th>Blood Pressure :</th>
-    <td>
-    <input name="bp" placeholder="Blood Pressure" class="form-control wd-450" required="true"></td>
-  </tr>                          
-     <tr>
-    <th>Blood Sugar :</th>
-    <td>
-    <input name="bs" placeholder="Blood Sugar" class="form-control wd-450" required="true"></td>
-  </tr> 
-  <tr>
-    <th>Weight :</th>
-    <td>
-    <input name="weight" placeholder="Weight" class="form-control wd-450" required="true"></td>
-  </tr>
-  <tr>
-    <th>Body Temprature :</th>
-    <td>
-    <input name="temp" placeholder="Blood Sugar" class="form-control wd-450" required="true"></td>
-  </tr>
-                         
-     <tr>
-    <th>Prescription :</th>
-    <td>
-    <textarea name="pres" placeholder="Medical Prescription" rows="12" cols="14" class="form-control wd-450" required="true"></textarea></td>
-  </tr>  
-   
-</table>
+      <td><?php echo $c++;?></td>
+      <td><?php echo htmlspecialchars($row['BloodPressure']);?></td>
+      <td><?php echo htmlspecialchars($row['BloodSugar']);?></td>
+      <td><?php echo htmlspecialchars($row['Weight']);?></td>
+      <td><?php echo htmlspecialchars($row['Temperature']);?></td>
+      <td><?php echo htmlspecialchars($row['MedicalPres']);?></td>
+      <td><small><?php echo htmlspecialchars($row['CreationDate']);?></small></td>
+    </tr>
+    <?php endwhile;endif;?>
+    </tbody>
+  </table></div>
+  </div>
 </div>
-<div class="modal-footer">
- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
- <button type="submit" name="submit" class="btn btn-primary">Submit</button>
-  
+
+<!-- Add Record -->
+<div class="row justify-content-center"><div class="col-lg-7 col-md-10">
+<div class="doc-card">
+  <div class="doc-card-header"><div class="ch-left"><i class="fa fa-plus-circle"></i><h5>Add Visit Record</h5></div></div>
+  <div class="doc-card-body">
+  <form method="post">
+    <div class="row">
+      <div class="col-md-6"><div class="doc-fg"><label>Blood Pressure</label><input type="text" name="bp" class="doc-input" placeholder="e.g. 120/80" required></div></div>
+      <div class="col-md-6"><div class="doc-fg"><label>Blood Sugar</label><input type="text" name="bs" class="doc-input" placeholder="e.g. 95 mg/dL" required></div></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6"><div class="doc-fg"><label>Weight (kg)</label><input type="text" name="weight" class="doc-input" placeholder="e.g. 70" required></div></div>
+      <div class="col-md-6"><div class="doc-fg"><label>Body Temperature (°F)</label><input type="text" name="temp" class="doc-input" placeholder="e.g. 98.6" required></div></div>
+    </div>
+    <div class="doc-fg"><label>Medical Prescription</label><textarea name="pres" class="doc-input" rows="3" placeholder="Prescription details..." required></textarea></div>
+    <button type="submit" name="submit" class="btn-doc btn-doc-primary"><i class="fa fa-save"></i> Save Record</button>
+    <a href="manage-patient.php" class="btn-doc btn-doc-outline" style="margin-left:10px"><i class="fa fa-arrow-left"></i> Back</a>
   </form>
+  </div>
 </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-			<!-- start: FOOTER -->
-	<?php include('include/footer.php');?>
-			<!-- end: FOOTER -->
-		
-			<!-- start: SETTINGS -->
-	<?php include('include/setting.php');?>
-			
-			<!-- end: SETTINGS -->
-		</div>
-		<!-- start: MAIN JAVASCRIPTS -->
-		<script src="vendor/jquery/jquery.min.js"></script>
-		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="vendor/modernizr/modernizr.js"></script>
-		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
-		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-		<script src="vendor/switchery/switchery.min.js"></script>
-		<!-- end: MAIN JAVASCRIPTS -->
-		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<script src="vendor/maskedinput/jquery.maskedinput.min.js"></script>
-		<script src="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-		<script src="vendor/autosize/autosize.min.js"></script>
-		<script src="vendor/selectFx/classie.js"></script>
-		<script src="vendor/selectFx/selectFx.js"></script>
-		<script src="vendor/select2/select2.min.js"></script>
-		<script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-		<script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
-		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<!-- start: CLIP-TWO JAVASCRIPTS -->
-		<script src="assets/js/main.js"></script>
-		<!-- start: JavaScript Event Handlers for this page -->
-		<script src="assets/js/form-elements.js"></script>
-		<script>
-			jQuery(document).ready(function() {
-				Main.init();
-				FormElements.init();
-			});
-		</script>
-		<!-- end: JavaScript Event Handlers for this page -->
-		<!-- end: CLIP-TWO JAVASCRIPTS -->
-	</body>
-</html>
-<?php }  ?>
+</div></div>
+
+<?php else:?><div class="doc-alert doc-alert-error"><i class="fa fa-exclamation-circle"></i>Patient not found.</div><?php endif;?>
+</div><?php include('include/footer.php');?></div></div>
+<?php include('include/scripts.php');?></body></html>

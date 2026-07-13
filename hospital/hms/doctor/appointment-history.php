@@ -1,193 +1,51 @@
 <?php
-session_start();
-error_reporting(0);
-include('include/config.php');
-if(strlen($_SESSION['id']==0)) {
- header('location:logout.php');
-  } else{
-
-if(isset($_GET['cancel']))
-		  {
-mysqli_query($con,"update appointment set doctorStatus='0' where id ='".$_GET['id']."'");
-                  $_SESSION['msg']="Appointment canceled !!";
-		  }
-?>
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Doctor | Appointment History</title>
-		
-		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
-		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/select2/select2.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-datepicker/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" href="assets/css/styles.css">
-		<link rel="stylesheet" href="assets/css/plugins.css">
-		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
-	</head>
-	<body>
-		<div id="app">		
-<?php include('include/sidebar.php');?>
-			<div class="app-content">
-				
-
-					<?php include('include/header.php');?>
-				<!-- end: TOP NAVBAR -->
-				<div class="main-content" >
-					<div class="wrap-content container" id="container">
-						<!-- start: PAGE TITLE -->
-						<section id="page-title">
-							<div class="row">
-								<div class="col-sm-8">
-									<h1 class="mainTitle">Doctor  | Appointment History</h1>
-																	</div>
-								<ol class="breadcrumb">
-									<li>
-										<span>Doctor </span>
-									</li>
-									<li class="active">
-										<span>Appointment History</span>
-									</li>
-								</ol>
-							</div>
-						</section>
-						<!-- end: PAGE TITLE -->
-						<!-- start: BASIC EXAMPLE -->
-						<div class="container-fluid container-fullw bg-white">
-						
-
-									<div class="row">
-								<div class="col-md-12">
-									
-									<p style="color:red;"><?php echo htmlentities($_SESSION['msg']);?>
-								<?php echo htmlentities($_SESSION['msg']="");?></p>	
-									<table class="table table-hover" id="sample-table-1">
-										<thead>
-											<tr>
-												<th class="center">#</th>
-												<th class="hidden-xs">Patient  Name</th>
-												<th>Specialization</th>
-												<th>Consultancy Fee</th>
-												<th>Appointment Date / Time </th>
-												<th>Appointment Creation Date  </th>
-												<th>Current Status</th>
-												<th>Action</th>
-												
-											</tr>
-										</thead>
-										<tbody>
-<?php
-$sql=mysqli_query($con,"select users.fullName as fname,appointment.*  from appointment join users on users.id=appointment.userId where appointment.doctorId='".$_SESSION['id']."'");
-$cnt=1;
-while($row=mysqli_fetch_array($sql))
-{
-?>
-
-											<tr>
-												<td class="center"><?php echo $cnt;?>.</td>
-												<td class="hidden-xs"><?php echo $row['fname'];?></td>
-												<td><?php echo $row['doctorSpecialization'];?></td>
-												<td><?php echo $row['consultancyFees'];?></td>
-												<td><?php echo $row['appointmentDate'];?> / <?php echo
-												 $row['appointmentTime'];?>
-												</td>
-												<td><?php echo $row['postingDate'];?></td>
-												<td>
-<?php if(($row['userStatus']==1) && ($row['doctorStatus']==1))  
-{
-	echo "Active";
+session_start();error_reporting(0);include('include/config.php');include('include/auth.php');
+$pageTitle='Appointments';$pageIcon='fa-calendar';
+if(isset($_GET['cancel'])){
+  mysqli_query($con,"UPDATE appointment SET doctorStatus='0' WHERE id='".intval($_GET['id'])."'");
+  $msg='Appointment cancelled successfully.';
 }
-if(($row['userStatus']==0) && ($row['doctorStatus']==1))  
-{
-	echo "Cancel by Patient";
-}
-
-if(($row['userStatus']==1) && ($row['doctorStatus']==0))  
-{
-	echo "Cancel by you";
-}
-
-
-
-												?></td>
-												<td >
-												<div class="visible-md visible-lg hidden-sm hidden-xs">
-							<?php if(($row['userStatus']==1) && ($row['doctorStatus']==1))  
-{ ?>
-
-													
-	<a href="appointment-history.php?id=<?php echo $row['id']?>&cancel=update" onClick="return confirm('Are you sure you want to cancel this appointment ?')" class="btn btn-info btn-xs" title="Cancel Appointment" tooltip-placement="top" tooltip="Remove">Cancel</a>
-	<?php } else {
-
-		echo "Canceled";
-		} ?>
-												</div>
-												</td>
-											</tr>
-											
-											<?php 
-$cnt=$cnt+1;
-											 }?>
-											
-											
-										</tbody>
-									</table>
-								</div>
-							</div>
-								</div>
-						
-						<!-- end: BASIC EXAMPLE -->
-						<!-- end: SELECT BOXES -->
-						
-					</div>
-				</div>
-			</div>
-			<!-- start: FOOTER -->
-	<?php include('include/footer.php');?>
-			<!-- end: FOOTER -->
-		
-			<!-- start: SETTINGS -->
-	<?php include('include/setting.php');?>
-			
-			<!-- end: SETTINGS -->
-		</div>
-		<!-- start: MAIN JAVASCRIPTS -->
-		<script src="vendor/jquery/jquery.min.js"></script>
-		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="vendor/modernizr/modernizr.js"></script>
-		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
-		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-		<script src="vendor/switchery/switchery.min.js"></script>
-		<!-- end: MAIN JAVASCRIPTS -->
-		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<script src="vendor/maskedinput/jquery.maskedinput.min.js"></script>
-		<script src="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-		<script src="vendor/autosize/autosize.min.js"></script>
-		<script src="vendor/selectFx/classie.js"></script>
-		<script src="vendor/selectFx/selectFx.js"></script>
-		<script src="vendor/select2/select2.min.js"></script>
-		<script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-		<script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
-		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<!-- start: CLIP-TWO JAVASCRIPTS -->
-		<script src="assets/js/main.js"></script>
-		<!-- start: JavaScript Event Handlers for this page -->
-		<script src="assets/js/form-elements.js"></script>
-		<script>
-			jQuery(document).ready(function() {
-				Main.init();
-				FormElements.init();
-			});
-		</script>
-		<!-- end: JavaScript Event Handlers for this page -->
-		<!-- end: CLIP-TWO JAVASCRIPTS -->
-	</body>
-</html>
-<?php } ?>
+?><!DOCTYPE html><html lang="en"><head><title>Appointments — HMS+ Doctor</title><?php include('include/head.php');?></head><body>
+<div id="app"><?php include('include/sidebar.php');?>
+<div class="app-content"><?php include('include/header.php');?>
+<div class="main-content">
+<div class="doc-breadcrumb"><i class="fa fa-home"></i><a href="dashboard.php">Dashboard</a><span class="sep">/</span><span class="cur">Appointments</span></div>
+<?php if(!empty($msg)):?><div class="doc-alert doc-alert-warn"><i class="fa fa-info-circle"></i><?php echo htmlspecialchars($msg);?></div><?php endif;?>
+<div class="doc-card">
+  <div class="doc-card-header"><div class="ch-left"><i class="fa fa-calendar"></i><h5>My Appointment History</h5></div></div>
+  <div class="doc-card-body" style="padding:0">
+  <div class="doc-table-wrap"><table class="doc-table">
+    <thead><tr><th>#</th><th>Patient Name</th><th>Specialization</th><th>Fee</th><th>Date / Time</th><th>Booked On</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+    <?php
+    $sql=mysqli_query($con,"SELECT users.fullName as fname, appointment.* FROM appointment JOIN users ON users.id=appointment.userId WHERE appointment.doctorId='".$_SESSION['id']."' ORDER BY postingDate DESC");
+    $c=1;
+    if(mysqli_num_rows($sql)==0):?>
+    <tr><td colspan="8" style="text-align:center;padding:36px;color:var(--muted)"><i class="fa fa-calendar" style="font-size:2rem;display:block;margin-bottom:10px;opacity:.3"></i>No appointments yet.</td></tr>
+    <?php else: while($row=mysqli_fetch_array($sql)):
+      $us=$row['userStatus'];$ds=$row['doctorStatus'];
+      if($us==1&&$ds==1){$badge='badge-success';$label='Active';}
+      elseif($us==0&&$ds==1){$badge='badge-danger';$label='Cancelled by Patient';}
+      else{$badge='badge-danger';$label='Cancelled by You';}
+    ?>
+    <tr>
+      <td><?php echo $c++;?></td>
+      <td><strong><?php echo htmlspecialchars($row['fname']);?></strong></td>
+      <td><?php echo htmlspecialchars($row['doctorSpecialization']);?></td>
+      <td>ETB <?php echo htmlspecialchars($row['consultancyFees']);?></td>
+      <td><?php echo htmlspecialchars($row['appointmentDate']);?><br><small style="color:var(--muted)"><?php echo htmlspecialchars($row['appointmentTime']);?></small></td>
+      <td><small><?php echo htmlspecialchars($row['postingDate']);?></small></td>
+      <td><span class="doc-badge <?php echo $badge;?>"><?php echo $label;?></span></td>
+      <td>
+        <?php if($us==1&&$ds==1):?>
+        <a href="appointment-history.php?id=<?php echo $row['id'];?>&cancel=1" onclick="return confirm('Cancel this appointment?')" class="btn-doc btn-doc-danger btn-doc-sm"><i class="fa fa-times"></i> Cancel</a>
+        <?php else:?><span style="color:var(--muted);font-size:.82rem;">Cancelled</span><?php endif;?>
+      </td>
+    </tr>
+    <?php endwhile;endif;?>
+    </tbody>
+  </table></div>
+  </div>
+</div>
+</div><?php include('include/footer.php');?></div></div>
+<?php include('include/scripts.php');?></body></html>

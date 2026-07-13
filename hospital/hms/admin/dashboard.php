@@ -1,222 +1,76 @@
 <?php
-session_start();
-error_reporting(0);
+session_start(); error_reporting(0);
 include('include/config.php');
-if(strlen($_SESSION['id']==0)) {
- header('location:logout.php');
-  } else{
-
-
-?>
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Admin  | Dashboard</title>
-		
-		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
-		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/select2/select2.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-datepicker/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" href="assets/css/styles.css">
-		<link rel="stylesheet" href="assets/css/plugins.css">
-		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
-
-
-	</head>
-	<body>
-		<div id="app">		
+if(empty($_SESSION['login'])||empty($_SESSION['role'])||$_SESSION['role']!=='admin'){session_unset();session_destroy();header('location:index.php');exit();}
+$pageTitle='Dashboard';$pageIcon='fa-home';
+$users   =mysqli_num_rows(mysqli_query($con,"SELECT id FROM users"));
+$doctors =mysqli_num_rows(mysqli_query($con,"SELECT id FROM doctors"));
+$appts   =mysqli_num_rows(mysqli_query($con,"SELECT id FROM appointment"));
+$patients=mysqli_num_rows(mysqli_query($con,"SELECT ID FROM tblpatient"));
+$queries =mysqli_num_rows(mysqli_query($con,"SELECT id FROM tblcontactus WHERE IsRead IS NULL"));
+?><!DOCTYPE html><html lang="en"><head><title>Dashboard — HMS+ Admin</title>
+<?php include('include/head.php');?></head><body>
+<div id="app">
 <?php include('include/sidebar.php');?>
-			<div class="app-content">
-				
-						<?php include('include/header.php');?>
-						
-				<!-- end: TOP NAVBAR -->
-				<div class="main-content" >
-					<div class="wrap-content container" id="container">
-						<!-- start: PAGE TITLE -->
-						<section id="page-title">
-							<div class="row">
-								<div class="col-sm-8">
-									<h1 class="mainTitle">Admin | Dashboard</h1>
-																	</div>
-								<ol class="breadcrumb">
-									<li>
-										<span>Admin</span>
-									</li>
-									<li class="active">
-										<span>Dashboard</span>
-									</li>
-								</ol>
-							</div>
-						</section>
-						<!-- end: PAGE TITLE -->
-						<!-- start: BASIC EXAMPLE -->
-							<div class="container-fluid container-fullw bg-white">
-							<div class="row">
-								<div class="col-sm-4">
-									<div class="panel panel-white no-radius text-center">
-										<div class="panel-body">
-											<span class="fa-stack fa-2x"> <i class="fa fa-square fa-stack-2x text-primary"></i> <i class="fa fa-smile-o fa-stack-1x fa-inverse"></i> </span>
-											<h2 class="StepTitle">Manage Users</h2>
-											
-											<p class="links cl-effect-1">
-												<a href="manage-users.php">
-												<?php $result = mysqli_query($con,"SELECT * FROM users ");
-$num_rows = mysqli_num_rows($result);
-{
-?>
-											Total Users :<?php echo htmlentities($num_rows);  } ?>		
-												</a>
-											</p>
-										</div>
-									</div>
-								</div>
-								<div class="col-sm-4">
-									<div class="panel panel-white no-radius text-center">
-										<div class="panel-body">
-											<span class="fa-stack fa-2x"> <i class="fa fa-square fa-stack-2x text-primary"></i> <i class="fa fa-users fa-stack-1x fa-inverse"></i> </span>
-											<h2 class="StepTitle">Manage Doctors</h2>
-										
-											<p class="cl-effect-1">
-												<a href="manage-doctors.php">
-												<?php $result1 = mysqli_query($con,"SELECT * FROM doctors ");
-$num_rows1 = mysqli_num_rows($result1);
-{
-?>
-											Total Doctors :<?php echo htmlentities($num_rows1);  } ?>		
-												</a>
-												
-											</p>
-										</div>
-									</div>
-								</div>
-								<div class="col-sm-4">
-									<div class="panel panel-white no-radius text-center">
-										<div class="panel-body">
-											<span class="fa-stack fa-2x"> <i class="fa fa-square fa-stack-2x text-primary"></i> <i class="fa fa-terminal fa-stack-1x fa-inverse"></i> </span>
-											<h2 class="StepTitle"> Appointments</h2>
-											
-											<p class="links cl-effect-1">
-												<a href="book-appointment.php">
-													<a href="appointment-history.php">
-												<?php $sql= mysqli_query($con,"SELECT * FROM appointment");
-$num_rows2 = mysqli_num_rows($sql);
-{
-?>
-											Total Appointments :<?php echo htmlentities($num_rows2);  } ?>	
-												</a>
-												</a>
-											</p>
-										</div>
-									</div>
-								</div>
+<div class="app-content">
+<?php include('include/header.php');?>
+<div class="main-content">
 
-<div class="col-sm-4">
-									<div class="panel panel-white no-radius text-center">
-										<div class="panel-body">
-											<span class="fa-stack fa-2x"> <i class="fa fa-square fa-stack-2x text-primary"></i> <i class="fa fa-smile-o fa-stack-1x fa-inverse"></i> </span>
-											<h2 class="StepTitle">Manage Patients</h2>
-											
-											<p class="links cl-effect-1">
-												<a href="manage-patient.php">
-<?php $result = mysqli_query($con,"SELECT * FROM tblpatient ");
-$num_rows = mysqli_num_rows($result);
-{
-?>
-Total Patients :<?php echo htmlentities($num_rows);  
-} ?>		
-</a>
-											</p>
-										</div>
-									</div>
-								</div>
+<!-- Welcome banner -->
+<div style="background:linear-gradient(135deg,#1a2b3c,#0d1b2a);border-radius:18px;padding:26px 30px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 8px 30px rgba(0,0,0,0.2);flex-wrap:wrap;gap:16px;">
+  <div style="flex:1;min-width:200px;">
+    <p style="color:rgba(255,255,255,.6);font-size:.8rem;margin-bottom:4px;">Welcome back,</p>
+    <h3 style="color:#fff;font-size:1.4rem;font-weight:800;margin:0;">Administrator 👋</h3>
+    <p style="color:rgba(255,255,255,.55);font-size:.82rem;margin-top:6px;">Here's what's happening in your hospital today.</p>
+  </div>
+  <div style="opacity:.1;font-size:5rem;color:#fff;flex-shrink:0;"><i class="fa fa-hospital-o"></i></div>
+</div>
+<style>
+@media (max-width:768px){
+  .row [class*='col-']{margin-bottom:16px;}
+}
+@media (max-width:480px){
+  #app .main-content>div:first-child{padding:20px 16px!important;font-size:0.78rem;}
+  #app .main-content>div:first-child h3{font-size:1.2rem!important;}
+  #app .main-content>div:first-child>div:last-child{display:none;}
+}
+</style>
 
+<!-- Stat cards -->
+<div class="row">
+  <div class="col-lg-3 col-md-6"><div class="adm-stat"><div class="si" style="background:rgba(238,155,0,.12);color:var(--amber)"><i class="fa fa-users"></i></div><div><div class="sn"><?php echo $users;?></div><div class="sl">Total Users</div><a href="manage-users.php" class="sa" style="background:rgba(238,155,0,.1);color:var(--amber)">View all <i class="fa fa-arrow-right"></i></a></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="adm-stat"><div class="si" style="background:rgba(10,147,150,.12);color:var(--teal)"><i class="fa fa-user-md"></i></div><div><div class="sn"><?php echo $doctors;?></div><div class="sl">Total Doctors</div><a href="manage-doctors.php" class="sa" style="background:rgba(10,147,150,.1);color:var(--teal)">View all <i class="fa fa-arrow-right"></i></a></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="adm-stat"><div class="si" style="background:rgba(0,119,182,.12);color:var(--blue)"><i class="fa fa-calendar"></i></div><div><div class="sn"><?php echo $appts;?></div><div class="sl">Appointments</div><a href="appointment-history.php" class="sa" style="background:rgba(0,119,182,.1);color:var(--blue)">View all <i class="fa fa-arrow-right"></i></a></div></div></div>
+  <div class="col-lg-3 col-md-6"><div class="adm-stat"><div class="si" style="background:rgba(45,106,79,.12);color:var(--green)"><i class="fa fa-procedures"></i></div><div><div class="sn"><?php echo $patients;?></div><div class="sl">Patients</div><a href="manage-patient.php" class="sa" style="background:rgba(45,106,79,.1);color:var(--green)">View all <i class="fa fa-arrow-right"></i></a></div></div></div>
+</div>
 
+<?php if($queries>0):?>
+<div class="adm-alert adm-alert-warn"><i class="fa fa-bell"></i> You have <strong><?php echo $queries;?> unread quer<?php echo $queries==1?'y':'ies';?></strong>. <a href="unread-queries.php" style="color:var(--amber-dark);font-weight:600;">View now &rarr;</a></div>
+<?php endif;?>
 
+<!-- Quick actions -->
+<h6 style="font-size:.78rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Quick Actions</h6>
+<div class="row">
+<?php
+$actions=[
+  ['add-doctor.php','fa-user-plus','Add Doctor','Register a new doctor to the system','rgba(238,155,0,.1)','var(--amber)'],
+  ['doctor-specilization.php','fa-stethoscope','Specializations','Manage doctor specialization categories','rgba(10,147,150,.1)','var(--teal)'],
+  ['appointment-history.php','fa-calendar-check-o','All Appointments','View all patient appointments','rgba(0,119,182,.1)','var(--blue)'],
+  ['unread-queries.php','fa-envelope-open','Unread Queries','Review contact form messages','rgba(230,57,70,.1)','#e63946'],
+  ['between-dates-reports.php','fa-bar-chart','Reports','Generate appointment date reports','rgba(123,44,191,.1)','#7b2cbf'],
+  ['patient-search.php','fa-search','Patient Search','Find patient by name or mobile','rgba(45,106,79,.1)','var(--green)'],
+];
+foreach($actions as $a):?>
+<div class="col-lg-4 col-md-6">
+  <a href="<?php echo $a[0];?>" style="display:block;background:#fff;border-radius:16px;padding:22px 20px;border:1.5px solid var(--border);box-shadow:var(--shadow);transition:all .3s;margin-bottom:20px;text-decoration:none;color:var(--dark);" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 12px 35px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+    <div style="width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:14px;background:<?php echo $a[4];?>;color:<?php echo $a[5];?>"><i class="fa <?php echo $a[1];?>"></i></div>
+    <div style="font-weight:700;font-size:.9rem;margin-bottom:4px;"><?php echo $a[2];?></div>
+    <div style="font-size:.78rem;color:var(--muted);"><?php echo $a[3];?></div>
+  </a>
+</div>
+<?php endforeach;?>
+</div>
 
-
-			<div class="col-sm-4">
-									<div class="panel panel-white no-radius text-center">
-										<div class="panel-body">
-											<span class="fa-stack fa-2x"> <i class="ti-files fa-1x text-primary"></i> <i class="fa fa-terminal fa-stack-1x fa-inverse"></i> </span>
-											<h2 class="StepTitle"> New Queries</h2>
-											
-											<p class="links cl-effect-1">
-												<a href="book-appointment.php">
-													<a href="unread-queries.php">
-												<?php 
-$sql= mysqli_query($con,"SELECT * FROM tblcontactus where  IsRead is null");
-$num_rows22 = mysqli_num_rows($sql);
-?>
-											Total New Queries :<?php echo htmlentities($num_rows22);   ?>	
-												</a>
-												</a>
-											</p>
-										</div>
-									</div>
-								</div>
-
-
-
-							</div>
-						</div>
-			
-					
-					
-						
-						
-					
-						<!-- end: SELECT BOXES -->
-						
-					</div>
-				</div>
-			</div>
-			<!-- start: FOOTER -->
-	<?php include('include/footer.php');?>
-			<!-- end: FOOTER -->
-		
-			<!-- start: SETTINGS -->
-	<?php include('include/setting.php');?>
-		
-			<!-- end: SETTINGS -->
-		</div>
-		<!-- start: MAIN JAVASCRIPTS -->
-		<script src="vendor/jquery/jquery.min.js"></script>
-		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="vendor/modernizr/modernizr.js"></script>
-		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
-		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-		<script src="vendor/switchery/switchery.min.js"></script>
-		<!-- end: MAIN JAVASCRIPTS -->
-		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<script src="vendor/maskedinput/jquery.maskedinput.min.js"></script>
-		<script src="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-		<script src="vendor/autosize/autosize.min.js"></script>
-		<script src="vendor/selectFx/classie.js"></script>
-		<script src="vendor/selectFx/selectFx.js"></script>
-		<script src="vendor/select2/select2.min.js"></script>
-		<script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-		<script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
-		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<!-- start: CLIP-TWO JAVASCRIPTS -->
-		<script src="assets/js/main.js"></script>
-		<!-- start: JavaScript Event Handlers for this page -->
-		<script src="assets/js/form-elements.js"></script>
-		<script>
-			jQuery(document).ready(function() {
-				Main.init();
-				FormElements.init();
-			});
-		</script>
-		<!-- end: JavaScript Event Handlers for this page -->
-		<!-- end: CLIP-TWO JAVASCRIPTS -->
-	</body>
-</html>
-<?php } ?>
+</div><?php include('include/footer.php');?></div></div>
+<?php include('include/scripts.php');?>
+</body></html>

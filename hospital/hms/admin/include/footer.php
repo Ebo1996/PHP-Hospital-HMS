@@ -1,10 +1,4 @@
-<footer>
-				<div class="footer-inner">
-					<div class="pull-left">
-					<span class="text-bold text-uppercase"> Hospital Management System</span>
-					</div>
-					<div class="pull-right">
-						<span class="go-top"><i class="ti-angle-up"></i></span>
-					</div>
-				</div>
-			</footer>
+<div class="adm-footer">
+  <span>&copy; <?php echo date('Y');?> HMS+ &mdash; Admin Portal</span>
+  <span><a href="../../index.php">Visit Site</a></span>
+</div>

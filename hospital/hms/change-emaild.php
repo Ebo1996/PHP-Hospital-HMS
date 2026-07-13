@@ -1,184 +1,74 @@
 <?php
-session_start();
-error_reporting(0);
+session_start();error_reporting(0);
 include('include/config.php');
 include('include/checklogin.php');
 check_login();
-if(isset($_POST['submit']))
-{
-	$email=$_POST['email'];
-$sql=mysqli_query($con,"Update users set email='$email' where id='".$_SESSION['id']."'");
-if($sql)
-{
-$msg="Your email updated Successfully";
-
-
+$pageTitle = 'Change Email';
+$pageIcon  = 'fa-envelope';
+if(isset($_POST['submit'])){
+  $email = mysqli_real_escape_string($con, trim($_POST['email']));
+  $chk   = mysqli_query($con,"SELECT id FROM users WHERE email='$email' AND id!='".$_SESSION['id']."'");
+  if(mysqli_num_rows($chk)>0){$msg='This email is already in use.';$mtype='error';}
+  else{
+    mysqli_query($con,"UPDATE users SET email='$email' WHERE id='".$_SESSION['id']."'");
+    $_SESSION['login']=$email;
+    $msg='Email updated successfully.';$mtype='success';
+  }
 }
-
+?><!DOCTYPE html><html lang="en"><head><title>Change Email — HMS+</title>
+<?php include('include/head.php');?></head><body>
+<div id="app"><?php include('include/sidebar.php');?>
+<div class="app-content"><?php include('include/header.php');?>
+<div class="main-content">
+<div class="hms-breadcrumb">
+  <i class="fa fa-home"></i><a href="dashboard.php">Dashboard</a>
+  <span class="sep">/</span><a href="edit-profile.php">My Profile</a>
+  <span class="sep">/</span><span class="current">Change Email</span>
+</div>
+<?php if(!empty($msg)):?>
+<div class="hms-alert hms-alert-<?php echo $mtype;?>">
+  <i class="fa fa-<?php echo $mtype==='success'?'check-circle':'exclamation-circle';?>"></i>
+  <?php echo htmlspecialchars($msg);?>
+</div>
+<?php endif;?>
+<div class="row justify-content-center"><div class="col-lg-5 col-md-7">
+<div class="hms-card">
+  <div class="hms-card-header">
+    <i class="fa fa-envelope"></i><h5>Change Email Address</h5>
+  </div>
+  <div class="hms-card-body">
+    <div style="background:var(--teal-xlight);border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:0.88rem;color:var(--teal-dark);display:flex;align-items:flex-start;gap:10px;">
+      <i class="fa fa-info-circle" style="margin-top:2px;flex-shrink:0;"></i>
+      <span>Changing your email will update your login credentials. You'll need to use the new email to sign in next time.</span>
+    </div>
+    <form method="post">
+      <div class="hms-form-group">
+        <label>New Email Address</label>
+        <div style="position:relative;">
+          <i class="fa fa-envelope" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);"></i>
+          <input type="email" name="email" id="emailField" class="hms-input" style="padding-left:38px;"
+                 placeholder="new@email.com" required onblur="checkEmailAvail()">
+        </div>
+        <span id="av-status" style="font-size:0.8rem;margin-top:4px;display:block;"></span>
+      </div>
+      <button type="submit" name="submit" id="submit" class="btn-hms btn-hms-primary" style="width:100%;justify-content:center;">
+        <i class="fa fa-save"></i> Update Email
+      </button>
+      <a href="edit-profile.php" class="btn-hms btn-hms-outline" style="width:100%;justify-content:center;margin-top:10px;">
+        Cancel
+      </a>
+    </form>
+  </div>
+</div>
+</div></div>
+</div><?php include('include/footer.php');?></div></div>
+<?php include('include/scripts.php');?>
+<script>
+function checkEmailAvail(){
+  var e=$('#emailField').val().trim(), s=$('#av-status');
+  if(e.length<4){s.html('');return;}
+  s.html('<span style="color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Checking…</span>');
+  $.post('check_availability.php',{email:e},function(d){s.html(d);});
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>User | Edit Profile</title>
-		
-		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
-		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/select2/select2.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-datepicker/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" href="assets/css/styles.css">
-		<link rel="stylesheet" href="assets/css/plugins.css">
-		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
-
-
-	</head>
-	<body>
-		<div id="app">		
-<?php include('include/sidebar.php');?>
-			<div class="app-content">
-				
-						<?php include('include/header.php');?>
-						
-				<!-- end: TOP NAVBAR -->
-				<div class="main-content" >
-					<div class="wrap-content container" id="container">
-						<!-- start: PAGE TITLE -->
-						<section id="page-title">
-							<div class="row">
-								<div class="col-sm-8">
-									<h1 class="mainTitle">User | Edit Profile</h1>
-																	</div>
-								<ol class="breadcrumb">
-									<li>
-										<span>User </span>
-									</li>
-									<li class="active">
-										<span>Edit Profile</span>
-									</li>
-								</ol>
-							</div>
-						</section>
-						<!-- end: PAGE TITLE -->
-						<!-- start: BASIC EXAMPLE -->
-						<div class="container-fluid container-fullw bg-white">
-							<div class="row">
-								<div class="col-md-12">
-<h5 style="color: green; font-size:18px; ">
-<?php if($msg) { echo htmlentities($msg);}?> </h5>
-									<div class="row margin-top-30">
-										<div class="col-lg-8 col-md-12">
-											<div class="panel panel-white">
-												<div class="panel-heading">
-													<h5 class="panel-title">Edit Profile</h5>
-												</div>
-												<div class="panel-body">
-				<form name="registration" id="updatemail"  method="post">
-<div class="form-group">
-									<label for="fess">
-																 User Email
-															</label>
-			<input type="email" class="form-control" name="email" id="email" onBlur="userAvailability()"  placeholder="Email" required>
-								
-									 <span id="user-availability-status1" style="font-size:12px;"></span>
-														</div>
-
-
-
-														
-														
-														
-														
-														<button type="submit" name="submit" id="submit" class="btn btn-o btn-primary">
-															Update
-														</button>
-													</form>
-										
-												</div>
-											</div>
-										</div>
-											
-											</div>
-										</div>
-									<div class="col-lg-12 col-md-12">
-											<div class="panel panel-white">
-												
-												
-											</div>
-										</div>
-									</div>
-								</div>
-						
-						<!-- end: BASIC EXAMPLE -->
-			
-					
-					
-						
-						
-					
-						<!-- end: SELECT BOXES -->
-						
-					</div>
-				</div>
-			</div>
-			<!-- start: FOOTER -->
-	<?php include('include/footer.php');?>
-			<!-- end: FOOTER -->
-		
-			<!-- start: SETTINGS -->
-	<?php include('include/setting.php');?>
-			
-			<!-- end: SETTINGS -->
-		</div>
-		<!-- start: MAIN JAVASCRIPTS -->
-		<script src="vendor/jquery/jquery.min.js"></script>
-		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="vendor/modernizr/modernizr.js"></script>
-		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
-		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-		<script src="vendor/switchery/switchery.min.js"></script>
-		<!-- end: MAIN JAVASCRIPTS -->
-		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<script src="vendor/maskedinput/jquery.maskedinput.min.js"></script>
-		<script src="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-		<script src="vendor/autosize/autosize.min.js"></script>
-		<script src="vendor/selectFx/classie.js"></script>
-		<script src="vendor/selectFx/selectFx.js"></script>
-		<script src="vendor/select2/select2.min.js"></script>
-		<script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
-		<script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
-		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
-		<!-- start: CLIP-TWO JAVASCRIPTS -->
-		<script src="assets/js/main.js"></script>
-		<!-- start: JavaScript Event Handlers for this page -->
-		<script src="assets/js/form-elements.js"></script>
-		<script>
-			jQuery(document).ready(function() {
-				Main.init();
-				FormElements.init();
-			});
-		</script>
-	<script>
-function userAvailability() {
-$("#loaderIcon").show();
-jQuery.ajax({
-url: "check_availability.php",
-data:'email='+$("#email").val(),
-type: "POST",
-success:function(data){
-$("#user-availability-status1").html(data);
-$("#loaderIcon").hide();
-},
-error:function (){}
-});
-}
-</script>	
-		
-	</body>
-</html>
+</script>
+</body></html>

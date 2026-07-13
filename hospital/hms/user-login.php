@@ -1,126 +1,126 @@
-<?php session_start();
+<?php
+session_start();
 error_reporting(0);
 include("include/config.php");
-if(isset($_POST['submit']))
-{
-$puname=$_POST['username'];	
-$ppwd=md5($_POST['password']);
-$ret=mysqli_query($con,"SELECT * FROM users WHERE email='$puname' and password='$ppwd'");
-$num=mysqli_fetch_array($ret);
-if($num>0)
-{
-$_SESSION['login']=$_POST['username'];
-$_SESSION['id']=$num['id'];
-$pid=$num['id'];
-$host=$_SERVER['HTTP_HOST'];
-$uip=$_SERVER['REMOTE_ADDR'];
-$status=1;
-// For stroing log if user login successfull
-$log=mysqli_query($con,"insert into userlog(uid,username,userip,status) values('$pid','$puname','$uip','$status')");
-header("location:dashboard.php");
-}
-else
-{
-// For stroing log if user login unsuccessfull
-$_SESSION['login']=$_POST['username'];	
-$uip=$_SERVER['REMOTE_ADDR'];
-$status=0;
-mysqli_query($con,"insert into userlog(username,userip,status) values('$puname','$uip','$status')");
 
-echo "<script>alert('Invalid username or password');</script>";
-echo "<script>window.location.href='user-login.php'</script>";
-}
+if (isset($_POST['submit'])) {
+    $puname = mysqli_real_escape_string($con, $_POST['username']);
+    $ppwd   = md5($_POST['password']);
+
+    $ret = mysqli_query($con, "SELECT * FROM users WHERE email='$puname' AND password='$ppwd'");
+    $num = mysqli_fetch_array($ret);
+
+    if ($num && $num['id'] > 0) {
+        $_SESSION['login'] = $puname;
+        $_SESSION['id']    = $num['id'];
+        $_SESSION['role']  = 'patient';   // ← role-based flag
+
+        $uip   = $_SERVER['REMOTE_ADDR'];
+        mysqli_query($con, "INSERT INTO userlog(uid,username,userip,status) VALUES('{$num['id']}','$puname','$uip','1')");
+        header("location:dashboard.php");
+        exit();
+    } else {
+        $uip = $_SERVER['REMOTE_ADDR'];
+        mysqli_query($con, "INSERT INTO userlog(username,userip,status) VALUES('$puname','$uip','0')");
+        $loginError = "Invalid email or password.";
+    }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>User-Login</title>
-		
-		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
-		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
-		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
-		<link rel="stylesheet" href="assets/css/styles.css">
-		<link rel="stylesheet" href="assets/css/plugins.css">
-		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
-	</head>
-	<body class="login">
-		<div class="row">
-			<div class="main-login col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4">
-				<div class="logo margin-top-30">
-				<a href="../index.php"><h2> HMS | Patient Login</h2></a>
-				</div>
+<head>
+    <title>Patient Login — HMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Poppins',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;
+             background:linear-gradient(135deg,#003845 0%,#005f73 50%,#0a9396 100%);}
+        .login-wrap{width:100%;max-width:440px;padding:20px;}
+        .login-card{background:#fff;border-radius:24px;padding:44px 40px;box-shadow:0 30px 80px rgba(0,0,0,0.25);}
+        .login-logo{text-align:center;margin-bottom:32px;}
+        .login-logo .logo-icon{width:64px;height:64px;background:linear-gradient(135deg,#0a9396,#005f73);border-radius:18px;
+                               display:inline-flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;margin-bottom:14px;}
+        .login-logo h2{font-size:1.4rem;font-weight:700;color:#0d1b2a;margin-bottom:4px;}
+        .login-logo p{font-size:0.85rem;color:#6c757d;}
+        .role-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(10,147,150,0.1);color:#0a9396;
+                    border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:600;margin-bottom:24px;}
+        .form-group{margin-bottom:18px;}
+        .form-group label{font-size:0.82rem;font-weight:600;color:#0d1b2a;display:block;margin-bottom:6px;}
+        .input-wrap{position:relative;}
+        .input-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:0.9rem;}
+        .input-wrap input{width:100%;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px 12px 40px;
+                          font-size:0.9rem;font-family:'Poppins',sans-serif;transition:all 0.3s;background:#f8fafc;}
+        .input-wrap input:focus{outline:none;border-color:#0a9396;background:#fff;box-shadow:0 0 0 3px rgba(10,147,150,0.1);}
+        .forgot{font-size:0.8rem;color:#0a9396;float:right;margin-top:4px;}
+        .forgot:hover{text-decoration:underline;}
+        .btn-login{width:100%;background:linear-gradient(135deg,#0a9396,#005f73);color:#fff;border:none;border-radius:12px;
+                   padding:13px;font-size:0.95rem;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;
+                   transition:all 0.3s;margin-top:8px;}
+        .btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,95,115,0.35);}
+        .error-msg{background:#fff0f0;border:1px solid #fecaca;color:#dc2626;border-radius:10px;
+                   padding:10px 14px;font-size:0.84rem;margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+        .divider{text-align:center;color:#94a3b8;font-size:0.82rem;margin:20px 0;position:relative;}
+        .divider::before,.divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:#e2e8f0;}
+        .divider::before{left:0;} .divider::after{right:0;}
+        .register-link{text-align:center;font-size:0.85rem;color:#6c757d;margin-top:18px;}
+        .register-link a{color:#0a9396;font-weight:600;}
+        .back-home{text-align:center;margin-top:16px;}
+        .back-home a{color:rgba(255,255,255,0.75);font-size:0.83rem;text-decoration:none;}
+        .back-home a:hover{color:#fff;}
+        .portal-links{display:flex;gap:10px;margin-top:16px;}
+        .portal-link{flex:1;text-align:center;padding:10px;border-radius:12px;border:1.5px solid #e2e8f0;
+                     font-size:0.78rem;font-weight:600;color:#6c757d;transition:all 0.3s;}
+        .portal-link:hover{border-color:#0a9396;color:#0a9396;background:rgba(10,147,150,0.04);}
+        .portal-link i{display:block;font-size:1.2rem;margin-bottom:4px;}
+    </style>
+</head>
+<body>
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="logo-icon"><i class="fa fa-heartbeat"></i></div>
+            <h2>HMS<span style="color:#0a9396">+</span></h2>
+            <p>Hospital Management System</p>
+        </div>
+        <div class="text-center"><span class="role-badge"><i class="fa fa-user"></i> Patient Portal</span></div>
 
-				<div class="box-login">
-					<form class="form-login" method="post">
-						<fieldset>
-							<legend>
-								Sign in to your account
-							</legend>
-							<p>
-								Please enter your name and password to log in.<br />
-								<span style="color:red;"><?php echo $_SESSION['errmsg']; ?><?php echo $_SESSION['errmsg']="";?></span>
-							</p>
-							<div class="form-group">
-								<span class="input-icon">
-									<input type="email" class="form-control" name="username" placeholder="Email" required>
-									<i class="fa fa-user"></i> </span>
-							</div>
-							<div class="form-group form-actions">
-								<span class="input-icon">
-									<input type="password" class="form-control" name="password" placeholder="Password" required>
-									<i class="fa fa-lock"></i>
-									 </span><a href="forgot-password.php">
-									Forgot Password ?
-								</a>
-							</div>
-							<div class="form-actions">
-								
-								<button type="submit" class="btn btn-primary pull-right" name="submit">
-									Login <i class="fa fa-arrow-circle-right"></i>
-								</button>
-							</div>
-							<div class="new-account">
-								Don't have an account yet?
-								<a href="registration.php">
-									Create an account
-								</a>
-							</div>
-						</fieldset>
-					</form>
+        <?php if (!empty($loginError)): ?>
+        <div class="error-msg"><i class="fa fa-exclamation-circle"></i> <?php echo htmlspecialchars($loginError); ?></div>
+        <?php endif; ?>
 
-					<div class="copyright">
-						</span><span class="text-bold text-uppercase"> Hospital Management System</span>.
-					</div>
-			
-				</div>
+        <form method="post" autocomplete="off">
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrap">
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" name="username" placeholder="Enter your email" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Password <a href="forgot-password.php" class="forgot">Forgot Password?</a></label>
+                <div class="input-wrap">
+                    <i class="fa fa-lock"></i>
+                    <input type="password" name="password" placeholder="Enter your password" required>
+                </div>
+            </div>
+            <button type="submit" name="submit" class="btn-login">
+                <i class="fa fa-sign-in"></i> Sign In
+            </button>
+        </form>
 
-			</div>
-		</div>
-		<script src="vendor/jquery/jquery.min.js"></script>
-		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-		<script src="vendor/modernizr/modernizr.js"></script>
-		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
-		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-		<script src="vendor/switchery/switchery.min.js"></script>
-		<!-- <script src="vendor/jquery-validation/jquery.validate.min.js"></script> -->
-	
-		<script src="assets/js/main.js"></script>
+        <div class="divider">or access another portal</div>
+        <div class="portal-links">
+            <a href="../doctor" class="portal-link"><i class="fa fa-stethoscope"></i>Doctor</a>
+            <a href="../admin" class="portal-link"><i class="fa fa-cog"></i>Admin</a>
+        </div>
 
-		<script src="assets/js/login.js"></script>
-		<script>
-			jQuery(document).ready(function() {
-				Main.init();
-				Login.init();
-			});
-		</script>
-	
-	</body>
-	<!-- end: BODY -->
+        <div class="register-link">Don't have an account? <a href="registration.php">Register here</a></div>
+    </div>
+    <div class="back-home"><a href="../../index.php"><i class="fa fa-arrow-left"></i> Back to Home</a></div>
+</div>
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+</body>
 </html>
