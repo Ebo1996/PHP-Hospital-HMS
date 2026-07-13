@@ -1,11 +1,20 @@
 <?php
-// InfinityFree Database Configuration
-// IMPORTANT: Replace these values with your actual InfinityFree database details
+// Auto-detect environment: localhost vs production
+$isLocalhost = ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['SERVER_ADDR'] == '127.0.0.1');
 
-define('DB_SERVER','sql###.infinityfree.com'); // Replace ### with your SQL server number
-define('DB_USER','epiz_XXXXXXXX');             // Replace with your database username
-define('DB_PASS','your_database_password');    // Replace with your database password
-define('DB_NAME','epiz_XXXXXXXX_hms');         // Replace with your database name
+if ($isLocalhost) {
+    // XAMPP Localhost Configuration
+    define('DB_SERVER','localhost');
+    define('DB_USER','root');
+    define('DB_PASS','');
+    define('DB_NAME','hms');
+} else {
+    // InfinityFree Production Configuration
+    define('DB_SERVER','sql213.infinityfree.com');
+    define('DB_USER','if0_42403003');
+    define('DB_PASS','1p1gILvWyC1Yyd');
+    define('DB_NAME','if0_42403003_hms'); // Change XXX to your actual database name
+}
 
 $con = mysqli_connect(DB_SERVER,DB_USER,DB_PASS,DB_NAME);
 

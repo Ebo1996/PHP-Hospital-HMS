@@ -22,12 +22,45 @@ if(isset($_POST['submit'])){
 <head>
   <title>Book Appointment — HMS+</title>
   <?php include('include/head.php'); ?>
+  <script src="vendor/jquery/jquery.min.js"></script>
   <script>
+  // Load jQuery early for inline event handlers
   function getdoctor(val){
-    $.ajax({type:"POST",url:"get_doctor.php",data:'specilizationid='+val,success:function(data){$("#doctor").html(data);}});
+    console.log("🔵 getdoctor() called with value:", val);
+    
+    $.ajax({
+      type: "POST",
+      url: "get_doctor.php",
+      data: 'specilizationid=' + val,
+      beforeSend: function(){
+        console.log("📤 Sending request to get_doctor.php with:", val);
+        $("#doctor").html('<option>Loading doctors...</option>');
+      },
+      success: function(data){
+        console.log("✅ Response received:", data);
+        $("#doctor").html(data);
+      },
+      error: function(xhr, status, error){
+        console.error("❌ Error loading doctors:", error);
+        console.error("Status:", status);
+        console.error("Response:", xhr.responseText);
+        $("#doctor").html('<option>Error loading doctors</option>');
+      }
+    });
   }
+  
   function getfee(val){
-    $.ajax({type:"POST",url:"get_doctor.php",data:'doctor='+val,success:function(data){$("#fees").html(data);}});
+    $.ajax({
+      type: "POST",
+      url: "get_doctor.php",
+      data: 'doctor=' + val,
+      success: function(data){
+        $("#fees").html(data);
+      },
+      error: function(xhr, status, error){
+        console.error("Error loading fees:", error);
+      }
+    });
   }
   </script>
 </head>

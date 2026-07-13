@@ -1,4 +1,10 @@
 <script src="vendor/jquery/jquery.min.js"></script>
+<script>
+// Fallback to CDN if local jQuery fails
+if (typeof jQuery == 'undefined') {
+    document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
+}
+</script>
 <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
 <script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
 <script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
@@ -116,6 +122,45 @@ $(function(){
   // Confirm before delete
   window.confirmDelete = function(message){
     return confirm(message || 'Are you sure you want to delete this item?');
+  };
+  
+  // AJAX functions for appointment booking
+  window.getdoctor = function(val){
+    console.log("🔵 getdoctor() called with value:", val);
+    
+    $.ajax({
+      type: "POST",
+      url: "get_doctor.php",
+      data: 'specilizationid=' + val,
+      beforeSend: function(){
+        console.log("📤 Sending request to get_doctor.php with:", val);
+        $("#doctor").html('<option>Loading doctors...</option>');
+      },
+      success: function(data){
+        console.log("✅ Response received:", data);
+        $("#doctor").html(data);
+      },
+      error: function(xhr, status, error){
+        console.error("❌ Error loading doctors:", error);
+        console.error("Status:", status);
+        console.error("Response:", xhr.responseText);
+        $("#doctor").html('<option>Error loading doctors</option>');
+      }
+    });
+  };
+  
+  window.getfee = function(val){
+    $.ajax({
+      type: "POST",
+      url: "get_doctor.php",
+      data: 'doctor=' + val,
+      success: function(data){
+        $("#fees").html(data);
+      },
+      error: function(xhr, status, error){
+        console.error("Error loading fees:", error);
+      }
+    });
   };
 });
 </script>

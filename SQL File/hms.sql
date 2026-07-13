@@ -44,19 +44,19 @@ CREATE TABLE `doctors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 INSERT INTO `doctors` (`id`, `specilization`, `doctorName`, `address`, `docFees`, `contactno`, `docEmail`, `password`, `creationDate`, `updationDate`) VALUES
-(1, 'ENT', 'Elisa', 'Jimma', '500', 142536250, 'elias@test.com', '123456abcd', '2024-04-10 18:16:52', '2024-05-14 09:26:17'),
-(2, 'Endocrinologists', 'Fedasa', 'Finfine ', '800', 1231231230, 'fedasa12@test.com', '12345', '2024-04-11 01:06:41', '2024-05-14 09:26:28'),
-(3, 'Pediatrics', 'Ebisa', 'Adama', '700', 74561235, 'ebisa@t.com', '12345', '2024-05-16 09:12:23', '2025-02-02'),
-(4, 'Orthopedics', 'Chala', 'Arsii Hospital', '1200', 95214563210, 'chala@gmail.com', '12345', '2024-05-16 09:13:11', '2025-02-02'),
-(5, 'Internal Medicine', 'Abdi', 'Holata', '1500', 8563214751, 'abdi@gmail.com', '12345', '2024-05-16 09:14:11', '2025-02-02'),
-(6, 'Obstetrics and Gynecology', 'Wabi', 'Markaatoo', '800', 745621330, 'wabii2@tt.com', '12345', '2024-05-16 09:15:18', '2025-02-02'),
-(7, 'Dermatology', 'Bikila', 'Jimma', '600', 142536251, 'bikila@test.com', '123456abcd', '2025-02-02', '2025-02-02'),
-(8, 'Radiology', 'Abebe', 'Finfine', '900', 1231231231, 'abebe@test.com', '12345', '2025-02-02', '2025-02-02'),
-(9, 'General Surgery', 'Webi', 'Adama', '1000', 74561236, 'webi@t.com', '12345', '2025-02-02', '2025-02-02'),
-(10, 'Ophthalmology', 'Anam', 'Arsii Hospital', '1100', 95214563211, 'anam@gmail.com', '12345', '2025-02-02', '2025-02-02'),
-(11, 'Anesthesia', 'Salamon', 'Holata', '1300', 8563214752, 'salamon@gmail.com', '12345', '2025-02-02', '2025-02-02'),
-(12, 'Pathology', 'Eyob', 'Markaatoo', '750', 745621331, 'eyob@tt.com', '12345', '2025-02-02', '2025-02-02'),
-(13, 'Dental Care', 'Dugasa', 'Jimma', '500', 142536252, 'dugasa@test.com', '123456abcd', '2025-02-02', '2025-02-02');
+(1, 'ENT', 'Elisa', 'Jimma', '500', 142536250, 'elias@test.com', 'e80b5017098950fc58aad83c8c14978e', '2024-04-10 18:16:52', '2024-05-14 09:26:17'),
+(2, 'Endocrinologists', 'Fedasa', 'Finfine ', '800', 1231231230, 'fedasa12@test.com', '827ccb0eea8a706c4c34a16891f84e7b', '2024-04-11 01:06:41', '2024-05-14 09:26:28'),
+(3, 'Pediatrics', 'Ebisa', 'Adama', '700', 74561235, 'ebisa@t.com', '827ccb0eea8a706c4c34a16891f84e7b', '2024-05-16 09:12:23', '2025-02-02'),
+(4, 'Orthopedics', 'Chala', 'Arsii Hospital', '1200', 95214563210, 'chala@gmail.com', '827ccb0eea8a706c4c34a16891f84e7b', '2024-05-16 09:13:11', '2025-02-02'),
+(5, 'Internal Medicine', 'Abdi', 'Holata', '1500', 8563214751, 'abdi@gmail.com', '827ccb0eea8a706c4c34a16891f84e7b', '2024-05-16 09:14:11', '2025-02-02'),
+(6, 'Obstetrics and Gynecology', 'Wabi', 'Markaatoo', '800', 745621330, 'wabii2@tt.com', '827ccb0eea8a706c4c34a16891f84e7b', '2024-05-16 09:15:18', '2025-02-02'),
+(7, 'Dermatology', 'Bikila', 'Jimma', '600', 142536251, 'bikila@test.com', 'e80b5017098950fc58aad83c8c14978e', '2025-02-02', '2025-02-02'),
+(8, 'Radiology', 'Abebe', 'Finfine', '900', 1231231231, 'abebe@test.com', '827ccb0eea8a706c4c34a16891f84e7b', '2025-02-02', '2025-02-02'),
+(9, 'General Surgery', 'Webi', 'Adama', '1000', 74561236, 'webi@t.com', '827ccb0eea8a706c4c34a16891f84e7b', '2025-02-02', '2025-02-02'),
+(10, 'Ophthalmology', 'Anam', 'Arsii Hospital', '1100', 95214563211, 'anam@gmail.com', '827ccb0eea8a706c4c34a16891f84e7b', '2025-02-02', '2025-02-02'),
+(11, 'Anesthesia', 'Salamon', 'Holata', '1300', 8563214752, 'salamon@gmail.com', '827ccb0eea8a706c4c34a16891f84e7b', '2025-02-02', '2025-02-02'),
+(12, 'Pathology', 'Eyob', 'Markaatoo', '750', 745621331, 'eyob@tt.com', '827ccb0eea8a706c4c34a16891f84e7b', '2025-02-02', '2025-02-02'),
+(13, 'Dental Care', 'Dugasa', 'Jimma', '500', 142536252, 'dugasa@test.com', 'e80b5017098950fc58aad83c8c14978e', '2025-02-02', '2025-02-02');
 
 CREATE TABLE `doctorslog` (
   `id` int(11) NOT NULL,
