@@ -10,16 +10,13 @@ $initial = strtoupper(substr($uname, 0, 1));
 <div class="hms-overlay" id="hmsOverlay"></div>
 <div class="hms-header">
   <div style="display:flex;align-items:center;gap:4px;">
-    <button class="hms-toggle" id="hmsToggle" aria-label="Toggle menu">
-      <i class="fa fa-bars"></i>
-    </button>
     <div class="page-title">
       <i class="fa <?php echo $pageIcon; ?>"></i>
       <?php echo htmlspecialchars($pageTitle); ?>
     </div>
   </div>
   <div class="header-right">
-    <a href="../../index.php" class="header-back"><i class="fa fa-arrow-left"></i> <span>Home</span></a>
+    <a href="../index.php" class="header-back"><i class="fa fa-arrow-left"></i> <span>Home</span></a>
     <div class="hms-user-pill">
       <div class="avatar"><?php echo $initial; ?></div>
       <div>

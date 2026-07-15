@@ -6,10 +6,10 @@ function navLink($href, $icon, $label, $current) {
 }
 ?>
 <div class="hms-sidebar" id="hmsSidebar">
-  <div class="sidebar-brand">
+  <a href="dashboard.php" class="sidebar-brand" style="text-decoration:none;color:inherit;">
     <div class="brand-icon"><i class="fa fa-heartbeat"></i></div>
     <div class="brand-name">HMS<span>+</span></div>
-  </div>
+  </a>
 
   <div class="sidebar-section-label">Patient Portal</div>
   <ul class="hms-nav">
