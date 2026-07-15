@@ -327,11 +327,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
 
 ### ⭐ Star this repository if you find it helpful!
-
-**Made with ❤️ by HMS+ Team**
+By Ebisa Berhanu
 
 **[🌐 Live Demo](http://hmsfree.infinityfreeapp.com/)** • **[GitHub](https://github.com/yourusername/HMS-Plus)**
 
-© 2024 HMS+. All rights reserved.
+2023
 
 </div>
