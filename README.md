@@ -526,20 +526,53 @@ Sessions are managed in each portal's index.php:
 
 ## 📸 Screenshots
 
-### Landing Page
-![Landing Page](docs/screenshots/landing.png)
+### 🏠 Landing Page
+![Landing Page](hospital/assets/readmeImages/landingpage.jpg)
+*Modern and responsive landing page with hero section, services, and contact information*
 
-### Patient Dashboard
-![Patient Dashboard](docs/screenshots/patient-dashboard.png)
+---
 
-### Doctor Dashboard
-![Doctor Dashboard](docs/screenshots/doctor-dashboard.png)
+### 👤 Patient Portal
 
-### Admin Dashboard
-![Admin Dashboard](docs/screenshots/admin-dashboard.png)
+#### Patient Login
+![Patient Login](hospital/assets/readmeImages/patient%20login.jpg)
+*Secure patient login with email and password authentication*
 
-### Book Appointment
-![Book Appointment](docs/screenshots/book-appointment.png)
+#### Patient Dashboard
+![Patient Dashboard](hospital/assets/readmeImages/patient%20dashboard.jpg)
+*Clean patient dashboard showing appointments, medical history, and quick actions*
+
+#### Book Appointment
+![Book Appointment](hospital/assets/readmeImages/bookappointmnentunderpatientdashboard.jpg)
+*Easy appointment booking with doctor specialization and date/time selection*
+
+#### Medical History
+![Medical History](hospital/assets/readmeImages/thisisunderpatientdahboard.jpg)
+*Comprehensive medical history tracking and records management*
+
+---
+
+### 👨‍⚕️ Doctor Portal
+
+#### Doctor Login
+![Doctor Login](hospital/assets/readmeImages/doctor%20login.jpg)
+*Dedicated doctor login portal with secure authentication*
+
+#### Doctor Dashboard
+![Doctor Dashboard](hospital/assets/readmeImages/doctor%20dashboard.jpg)
+*Professional doctor dashboard with appointment management and patient information*
+
+---
+
+### 👔 Admin Portal
+
+#### Admin Login
+![Admin Login](hospital/assets/readmeImages/admin%20login.jpg)
+*Administrative login with enhanced security for system management*
+
+#### Admin Dashboard
+![Admin Dashboard](hospital/assets/readmeImages/admin%20dashboard.jpg)
+*Comprehensive admin dashboard with system statistics, user management, and analytics*
 
 ---
 
