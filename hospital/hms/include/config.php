@@ -9,11 +9,11 @@ if ($isLocalhost) {
     define('DB_PASS','');
     define('DB_NAME','hms');
 } else {
-    // InfinityFree Production Configuration - Use full hostname
-    define('DB_SERVER','sql213.infinityfree.com');
-    define('DB_USER','if0_42403003');
-    define('DB_PASS','1p1gILvWyC1Yyd');
-    define('DB_NAME','if0_42403003_hms');
+    // InfinityFree Production Configuration - New Account
+    define('DB_SERVER','sql206.infinityfree.com');
+    define('DB_USER','if0_42415101');
+    define('DB_PASS','bTF5igRdGA');
+    define('DB_NAME','if0_42415101_hms'); // Update if your database name is different
     define('DB_PORT', 3306);
 }
 
